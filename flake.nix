@@ -24,12 +24,17 @@
             src = ./.;
             buildInputs = with pkgs; [
               git
+              makeWrapper
             ];
             propagatedBuildInputs = with pkgs.perlPackages; [
               Mojolicious
               JSON
               Git
             ];
+
+            postInstall = ''
+              wrapProgram $out/bin/pr-status.pl --prefix PATH : ${nixpkgs.lib.makeBinPath [ pkgs.git ]}
+            '';
 
             outputs = [ "out" "dev" ];
           };
