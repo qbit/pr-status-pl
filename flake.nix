@@ -22,6 +22,9 @@
             pname = "pr-status";
             version = "v0.0.1";
             src = ./.;
+            buildInputs = with pkgs; [
+              git
+            ];
             propagatedBuildInputs = with pkgs.perlPackages; [
               Mojolicious
               JSON
