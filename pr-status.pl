@@ -31,11 +31,13 @@ sub get_commit {
     $repo->command( 'fetch', 'origin', "pull/${pr}/head:pr-status-${pr}" );
     $repo->command( 'checkout', "pr-status-$pr" );
     my $commit = $repo->command( 'rev-parse', 'HEAD' );
+    my $log    = $repo->command( 'log', '-n', '1', '--pretty=format:%s' );
     $repo->command( 'checkout', 'master' );
 
     chomp $commit;
+    chomp $log;
 
-    return $commit;
+    return ( $log, $commit );
 }
 
 sub check_nixpkg_branches {
@@ -141,7 +143,7 @@ get '/:pr' => sub ($c) {
 
     return unless $pr =~ m/^\d+$/;
 
-    my $commit = get_commit($pr);
+    my ( $title, $commit ) = get_commit($pr);
 
     my $start = time;
     my $list  = check_nixpkg_branches $commit;
@@ -150,6 +152,7 @@ get '/:pr' => sub ($c) {
     my ( $release, $status ) = figure_status($list);
 
     my $result = {
+        title        => $title,
         branches     => $list,
         pull_request => $pr,
         status       => $status->{state},
