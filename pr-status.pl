@@ -19,7 +19,7 @@ my $repo_dir = "/var/lib/pr-status/nixpkgs";
 $ENV{"GIT_CONFIG_SYSTEM"} = "";        # Ignore insteadOf rules
 $ENV{"HOME"}              = "/tmp";    # Ignore ~/.netrc
 
-Git::command( 'clone', 'https://github.com/nixos/nixpkgs', $repo_dir )
+Git::command_noisy( 'clone', 'https://github.com/nixos/nixpkgs', $repo_dir )
   if !-e $repo_dir;
 my $repo = Git->repository( Directory => $repo_dir );
 
