@@ -60,7 +60,7 @@ sub check_nixpkg_branches {
 sub figure_status {
     my $list   = shift;
     my $status = {
-        state => "complete",
+        state => "open",
         info  => {},
     };
     my $release = "stable";
