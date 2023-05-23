@@ -22,10 +22,7 @@
             pname = "pr-status";
             version = "v0.0.1";
             src = ./.;
-            buildInputs = with pkgs; [
-              git
-              makeWrapper
-            ];
+            buildInputs = with pkgs; [ makeWrapper ];
             propagatedBuildInputs = with pkgs.perlPackages; [
               Mojolicious
               JSON
@@ -33,7 +30,9 @@
             ];
 
             postInstall = ''
-              wrapProgram $out/bin/pr-status.pl --prefix PATH : ${nixpkgs.lib.makeBinPath [ pkgs.git ]}
+              wrapProgram $out/bin/pr-status.pl --prefix PATH : ${
+                nixpkgs.lib.makeBinPath [ pkgs.git pkgs.perl ]
+              }
             '';
 
             outputs = [ "out" "dev" ];
