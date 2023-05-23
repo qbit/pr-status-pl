@@ -91,8 +91,10 @@ sub figure_status {
 # handle this stuff with a regex so we don't have to specify "22.11" kinda stuff
             my @b  = grep /$s/, @{$list};
             my $ns = $b[0];
-            $status->{info}->{$ns} = JSON::false;
-            $status->{info}->{$ns} = JSON::true if grep /^$s$/, @{$list};
+            if ( defined $ns ) {
+                $status->{info}->{$ns} = JSON::false;
+                $status->{info}->{$ns} = JSON::true if grep /^$s$/, @{$list};
+            }
         }
     }
 
