@@ -6,6 +6,7 @@
 use strict;
 use warnings;
 use v5.32;
+use Data::Dumper;
 
 use Git;
 use JSON qw( from_json );
@@ -19,7 +20,6 @@ my $repo_dir = "/var/lib/pr-status/nixpkgs";
 $ENV{"GIT_CONFIG_SYSTEM"} = "";        # Ignore insteadOf rules
 $ENV{"HOME"}              = "/tmp";    # Ignore ~/.netrc
 
-warn Git::exec_path();
 Git::command_noisy( 'clone', 'https://github.com/nixos/nixpkgs', $repo_dir )
   if !-e $repo_dir;
 my $repo = Git->repository( Directory => $repo_dir );
@@ -48,44 +48,62 @@ sub check_nixpkg_branches {
 
     foreach my $b ( split( '\n', $branches ) ) {
         $b =~ s/^\s+origin\///g;
-        push( @$list, $b ) if $b =~ m/nixos|nixpkgs|staging|master/;
+        push( @$list, $b )
+          if $b =~ m/^nixos|^nixpkgs|^staging|^master|^release/;
     }
 
     return $list;
 }
 
 sub figure_status {
-    my $list    = shift;
-    my $release = shift;
-    my $status  = {
+    my $list   = shift;
+    my $status = {
         state => "complete",
-        info  => {}
+        info  => {},
     };
+    my $release = "stable";
 
-    my @unstable =
-      qw/ nixos-unstable nixos-unstable-small nixpkgs-unstable staging staging-next /;
-    my @stable = qw/ release-22.11 nixos-22.11-small nixos-22.11 /;
-    my @other  = qw / master /;
+    my @unstable = qw/
+      master
+      staging
+      staging-next
+      nixpkgs-unstable
+      nixos-unstable-small
+      nixos-unstable
+      /;
+    my @stable = (
+        'staging-\d\d\.\d\d',     'staging-next-\d\d\.\d\d',
+        'nixos-\d\d\.\d\d-small', 'nixos-\d\d\.\d\d',
+        'release-\d\d\.\d\d'
+    );
 
-    if ( $release eq "stable" ) {
-        foreach my $s (@stable) {
-            $status->{info}->{$s} = grep /$s/, @{$list};
-        }
-    }
-    if ( $release eq "unstable" ) {
+    if ( grep /^master$/, @{$list} ) {
+        $release = "unstable";
         foreach my $s (@unstable) {
-            $status->{info}->{$s} = grep /^$s$/, @{$list};
+            $status->{info}->{$s} = JSON::false;
+            $status->{info}->{$s} = JSON::true if grep /^$s$/, @{$list};
+        }
+    }
+    else {
+        $release = "stable";
+        foreach my $s (@stable) {
+
+# handle this stuff with a regex so we don't have to specify "22.11" kinda stuff
+            my @b  = grep /$s/, @{$list};
+            my $ns = $b[0];
+            $status->{info}->{$ns} = JSON::false;
+            $status->{info}->{$ns} = JSON::true if grep /^$s$/, @{$list};
         }
     }
 
-    foreach my $b ( keys %{ $status->{info} } ) {
-        if ( !$status->{info}->{$b} ) {
+    foreach my $s ( keys %{ $status->{info} } ) {
+        if ( $status->{info}->{$s} == JSON::false ) {
             $status->{state} = "open";
             last;
         }
     }
 
-    return $status;
+    return ( $release, $status );
 }
 
 get '/gc' => sub ($c) {
@@ -112,9 +130,12 @@ get '/update' => sub ($c) {
     );
 };
 
-get '/:release/:pr' => sub ($c) {
-    my $pr      = $c->param('pr');
-    my $release = $c->param('release');
+get '/' => sub ($c) {
+    $c->render( text => 'hi' );
+};
+
+get '/:pr' => sub ($c) {
+    my $pr = $c->param('pr');
 
     return unless $pr =~ m/^\d+$/;
 
@@ -124,12 +145,13 @@ get '/:release/:pr' => sub ($c) {
     my $list  = check_nixpkg_branches $commit;
     my $end   = time;
 
-    my $status = figure_status( $list, $release );
+    my ( $release, $status ) = figure_status($list);
 
     my $result = {
         branches     => $list,
         pull_request => $pr,
         status       => $status->{state},
+        release      => $release,
         status_info  => $status->{info},
         queryTime    => sprintf( "%2f", $end - $start )
     };
