@@ -1,5 +1,6 @@
 {
-  description = "pr-status: a tool to query NixOS/nixpkgs pull request status as they move along the build chain";
+  description =
+    "pr-status: a tool to query NixOS/nixpkgs pull request status as they move along the build chain";
 
   inputs.nixpkgs.url = "nixpkgs/nixos-22.11";
 
@@ -10,16 +11,17 @@
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
       nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
     in {
+      overlay = final: prev: {
+        pr-status = self.packages.${prev.system}.pr-status;
+      };
+      nixosModule = import ./module.nix;
       packages = forAllSystems (system:
         let pkgs = nixpkgsFor.${system};
         in {
-          pr-status = pkgs.stdenv.mkDerivation {
+          pr-status = pkgs.perlPackages.buildPerlPackage {
             pname = "pr-status";
             version = "v0.0.1";
             src = ./.;
-            buildInputs = with pkgs.perlPackages; [ PerlTidy ];
-            nativeBuildInputs = with pkgs.perlPackages; [ perl ];
-
             propagatedBuildInputs = with pkgs.perlPackages; [
               Mojolicious
               JSON
@@ -30,7 +32,8 @@
           };
         });
 
-      defaultPackage = forAllSystems (system: self.packages.${system}.pr-status);
+      defaultPackage =
+        forAllSystems (system: self.packages.${system}.pr-status);
       devShells = forAllSystems (system:
         let pkgs = nixpkgsFor.${system};
         in {

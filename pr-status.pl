@@ -14,7 +14,7 @@ use Time::HiRes qw( time );
 
 my $VERSION = 'v0.0.1';
 
-my $repo_dir = "/home/qbit/gostart_nixpkgs";
+my $repo_dir = "/var/lib/pr-status/nixpkgs";
 
 $ENV{"GIT_CONFIG_SYSTEM"} = "";        # Ignore insteadOf rules
 $ENV{"HOME"}              = "/tmp";    # Ignore ~/.netrc
