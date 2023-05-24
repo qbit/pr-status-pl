@@ -173,7 +173,7 @@ __DATA__
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Main</title>
+  <title>pr-status</title>
   <style>body { padding: 0; margin: 0; }</style>
 </head>
 
