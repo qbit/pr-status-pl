@@ -20,7 +20,7 @@
         in {
           pr-status = pkgs.perlPackages.buildPerlPackage {
             pname = "pr-status";
-            version = "v0.0.1";
+            version = "v0.0.2";
             src = ./.;
             buildInputs = with pkgs; [ makeWrapper ];
             propagatedBuildInputs = with pkgs.perlPackages; [
@@ -43,6 +43,11 @@
         forAllSystems (system: self.packages.${system}.pr-status);
       devShells = forAllSystems (system:
         let pkgs = nixpkgsFor.${system};
+        npPackages = with pkgs; [
+          elmPackages.elm
+          elmPackages.elm-test
+          elmPackages.elm-live
+        ];
         in {
           default = pkgs.mkShell {
             shellHook = ''
@@ -57,7 +62,7 @@
               perl
               PerlCritic
               PerlTidy
-            ];
+            ] ++ npPackages;
           };
         });
     };
