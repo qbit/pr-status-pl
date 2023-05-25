@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Browser
-import Css exposing (alignItems, center, display, padding, pct, px, width)
+import Css exposing (padding, px)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css, disabled, href, placeholder, style)
 import Html.Styled.Events exposing (onClick, onInput)
@@ -91,7 +91,6 @@ view model =
     div
         [ css
             [ padding (px 30)
-            , width (pct 100)
             ]
         ]
         [ div []
