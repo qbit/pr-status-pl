@@ -1,11 +1,12 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (..)
-import Html.Attributes exposing (href, placeholder, style)
-import Html.Events exposing (onClick, onInput)
+import Css exposing (alignItems, center, display, padding, pct, px, width)
+import Html.Styled exposing (..)
+import Html.Styled.Attributes exposing (css, disabled, href, placeholder, style)
+import Html.Styled.Events exposing (onClick, onInput)
 import Http
-import Json.Decode as Decode exposing (Decoder, field, int, list, map5, map6, string)
+import Json.Decode as Decode exposing (Decoder, field, int, list, map5, string)
 
 
 type Status
@@ -37,7 +38,7 @@ main : Program () Model Msg
 main =
     Browser.element
         { init = init
-        , view = view
+        , view = view >> toUnstyled
         , update = update
         , subscriptions = \_ -> Sub.none
         }
@@ -87,14 +88,36 @@ init _ =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ div []
-            [ input [ placeholder "search...", onInput SetPR ] []
-            , button [ onClick RunSearch ] [ text "Search" ]
+    div
+        [ css
+            [ padding (px 30)
+            , width (pct 100)
             ]
-        , div []
-            [ viewResult model ]
         ]
+        [ div []
+            [ div []
+                [ input [ placeholder "search...", onInput SetPR ] []
+                , button
+                    [ onClick RunSearch
+                    , disabled (viewValidation model)
+                    ]
+                    [ text "Search" ]
+                ]
+            , div []
+                [ viewResult model
+                ]
+            ]
+        ]
+
+
+viewValidation : Model -> Bool
+viewValidation model =
+    case model.pull_request of
+        0 ->
+            True
+
+        _ ->
+            False
 
 
 viewResult : Model -> Html Msg
@@ -108,7 +131,8 @@ viewResult data =
                 prStr =
                     String.fromInt data.pull_request
             in
-            table []
+            table
+                []
                 [ tr []
                     [ td [] [ b [] [ text "Title:" ] ]
                     , td []
