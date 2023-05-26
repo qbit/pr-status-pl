@@ -107,6 +107,7 @@ sub figure_status {
     }
 
     $status->{state} = "complete" if $dataLen == $trueCount;
+    $status->{state} = "open" if @{$list} == 0;
 
     return ( $release, $status );
 }
