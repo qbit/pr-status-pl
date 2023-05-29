@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Browser
+import Browser exposing (Document)
 import Css exposing (padding, px)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css, disabled, href, placeholder, style)
@@ -36,9 +36,9 @@ type alias Model =
 
 main : Program () Model Msg
 main =
-    Browser.element
+    Browser.document
         { init = init
-        , view = view >> toUnstyled
+        , view = view
         , update = update
         , subscriptions = \_ -> Sub.none
         }
@@ -86,27 +86,33 @@ init _ =
     ( initialModel, Cmd.none )
 
 
-view : Model -> Html Msg
+view : Model -> Document Msg
 view model =
-    div
-        [ css
-            [ padding (px 30)
-            ]
-        ]
-        [ div []
-            [ div []
-                [ input [ placeholder "search...", onInput SetPR ] []
-                , button
-                    [ onClick RunSearch
-                    , disabled (viewValidation model)
+    { body =
+        [ Html.Styled.toUnstyled
+            (div
+                [ css
+                    [ padding (px 30)
                     ]
-                    [ text "Search" ]
                 ]
-            , div []
-                [ viewResult model
+                [ div []
+                    [ div []
+                        [ input [ placeholder "search...", onInput SetPR ] []
+                        , button
+                            [ onClick RunSearch
+                            , disabled (viewValidation model)
+                            ]
+                            [ text "Search" ]
+                        ]
+                    , div []
+                        [ viewResult model
+                        ]
+                    ]
                 ]
-            ]
+            )
         ]
+    , title = "pr-status"
+    }
 
 
 viewValidation : Model -> Bool
