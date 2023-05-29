@@ -119,14 +119,14 @@ sub figure_status {
         }
     }
 
-    my $dataLen = scalar keys %{$status->{info}};
+    my $dataLen   = scalar keys %{ $status->{info} };
     my $trueCount = 0;
     foreach my $s ( keys %{ $status->{info} } ) {
         $trueCount += 1 if $status->{info}->{$s} == JSON::true;
     }
 
     $status->{state} = "complete" if $dataLen == $trueCount;
-    $status->{state} = "open" if @{$list} == 0;
+    $status->{state} = "open"     if @{$list} == 0;
 
     return ( $release, $status );
 }
@@ -162,6 +162,10 @@ get '/' => sub ($c) {
 get '/:pr' => sub ($c) {
     my $pr = $c->param('pr');
 
+    if ( $lock == 1 ) {
+        return;
+    }
+
     return unless $pr =~ m/^\d+$/;
 
     my ( $title, $commit ) = get_commit($pr);
@@ -193,7 +197,7 @@ __DATA__
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>pr-status</title>
+  <title>Main</title>
   <style>body { padding: 0; margin: 0; }</style>
 </head>
 
@@ -989,11 +993,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.ba.ay === region.bs.ay)
+	if (region.ba.az === region.bs.az)
 	{
-		return 'on line ' + region.ba.ay;
+		return 'on line ' + region.ba.az;
 	}
-	return 'on lines ' + region.ba.ay + ' through ' + region.bs.ay;
+	return 'on lines ' + region.ba.az + ' through ' + region.bs.az;
 }
 
 
@@ -4202,7 +4206,7 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aE) && (_VirtualDom_doc.title = title = doc.aE);
+				(title !== doc.ao) && (_VirtualDom_doc.title = title = doc.ao);
 			});
 		}
 	);
@@ -4578,43 +4582,6 @@ function _Browser_load(url)
 
 
 
-var _Bitwise_and = F2(function(a, b)
-{
-	return a & b;
-});
-
-var _Bitwise_or = F2(function(a, b)
-{
-	return a | b;
-});
-
-var _Bitwise_xor = F2(function(a, b)
-{
-	return a ^ b;
-});
-
-function _Bitwise_complement(a)
-{
-	return ~a;
-};
-
-var _Bitwise_shiftLeftBy = F2(function(offset, a)
-{
-	return a << offset;
-});
-
-var _Bitwise_shiftRightBy = F2(function(offset, a)
-{
-	return a >> offset;
-});
-
-var _Bitwise_shiftRightZfBy = F2(function(offset, a)
-{
-	return a >>> offset;
-});
-
-
-
 // SEND REQUEST
 
 var _Http_toTask = F3(function(router, toTask, request)
@@ -4787,11 +4754,43 @@ function _Http_track(router, xhr, tracker)
 			bV: event.lengthComputable ? $elm$core$Maybe$Just(event.total) : $elm$core$Maybe$Nothing
 		}))));
 	});
-}var $elm$core$Basics$composeR = F3(
-	function (f, g, x) {
-		return g(
-			f(x));
-	});
+}
+
+
+var _Bitwise_and = F2(function(a, b)
+{
+	return a & b;
+});
+
+var _Bitwise_or = F2(function(a, b)
+{
+	return a | b;
+});
+
+var _Bitwise_xor = F2(function(a, b)
+{
+	return a ^ b;
+});
+
+function _Bitwise_complement(a)
+{
+	return ~a;
+};
+
+var _Bitwise_shiftLeftBy = F2(function(offset, a)
+{
+	return a << offset;
+});
+
+var _Bitwise_shiftRightBy = F2(function(offset, a)
+{
+	return a >> offset;
+});
+
+var _Bitwise_shiftRightZfBy = F2(function(offset, a)
+{
+	return a >>> offset;
+});
 var $elm$core$Basics$EQ = 1;
 var $elm$core$Basics$GT = 2;
 var $elm$core$Basics$LT = 0;
@@ -5574,9 +5573,9 @@ var $elm$core$Task$perform = F2(
 		return $elm$core$Task$command(
 			A2($elm$core$Task$map, toMessage, task));
 	});
-var $elm$browser$Browser$element = _Browser_element;
+var $elm$browser$Browser$document = _Browser_document;
 var $author$project$Main$Open = 1;
-var $author$project$Main$initialModel = {aL: _List_Nil, aa: '', P: 0, aT: '', aX: 1, aE: ''};
+var $author$project$Main$initialModel = {aL: _List_Nil, aa: '', P: 0, aT: '', aX: 1, ao: ''};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (_v0) {
@@ -5584,169 +5583,39 @@ var $author$project$Main$init = function (_v0) {
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $rtfeldman$elm_css$VirtualDom$Styled$UnscopedStyles = function (a) {
+var $author$project$Main$GotResult = function (a) {
+	return {$: 1, a: a};
+};
+var $elm$json$Json$Decode$decodeString = _Json_runOnString;
+var $elm$http$Http$BadStatus_ = F2(
+	function (a, b) {
+		return {$: 3, a: a, b: b};
+	});
+var $elm$http$Http$BadUrl_ = function (a) {
 	return {$: 0, a: a};
 };
-var $elm$core$String$cons = _String_cons;
-var $robinheghan$murmur3$Murmur3$HashData = F4(
-	function (shift, seed, hash, charsProcessed) {
-		return {Y: charsProcessed, ad: hash, R: seed, aj: shift};
+var $elm$http$Http$GoodStatus_ = F2(
+	function (a, b) {
+		return {$: 4, a: a, b: b};
 	});
-var $robinheghan$murmur3$Murmur3$c1 = 3432918353;
-var $robinheghan$murmur3$Murmur3$c2 = 461845907;
-var $elm$core$Bitwise$and = _Bitwise_and;
-var $elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
-var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
-var $robinheghan$murmur3$Murmur3$multiplyBy = F2(
-	function (b, a) {
-		return ((a & 65535) * b) + ((((a >>> 16) * b) & 65535) << 16);
-	});
-var $elm$core$Basics$neq = _Utils_notEqual;
-var $elm$core$Bitwise$or = _Bitwise_or;
-var $robinheghan$murmur3$Murmur3$rotlBy = F2(
-	function (b, a) {
-		return (a << b) | (a >>> (32 - b));
-	});
-var $elm$core$Bitwise$xor = _Bitwise_xor;
-var $robinheghan$murmur3$Murmur3$finalize = function (data) {
-	var acc = (!(!data.ad)) ? (data.R ^ A2(
-		$robinheghan$murmur3$Murmur3$multiplyBy,
-		$robinheghan$murmur3$Murmur3$c2,
-		A2(
-			$robinheghan$murmur3$Murmur3$rotlBy,
-			15,
-			A2($robinheghan$murmur3$Murmur3$multiplyBy, $robinheghan$murmur3$Murmur3$c1, data.ad)))) : data.R;
-	var h0 = acc ^ data.Y;
-	var h1 = A2($robinheghan$murmur3$Murmur3$multiplyBy, 2246822507, h0 ^ (h0 >>> 16));
-	var h2 = A2($robinheghan$murmur3$Murmur3$multiplyBy, 3266489909, h1 ^ (h1 >>> 13));
-	return (h2 ^ (h2 >>> 16)) >>> 0;
+var $elm$http$Http$NetworkError_ = {$: 2};
+var $elm$http$Http$Receiving = function (a) {
+	return {$: 1, a: a};
 };
-var $elm$core$String$foldl = _String_foldl;
-var $robinheghan$murmur3$Murmur3$mix = F2(
-	function (h1, k1) {
-		return A2(
-			$robinheghan$murmur3$Murmur3$multiplyBy,
-			5,
-			A2(
-				$robinheghan$murmur3$Murmur3$rotlBy,
-				13,
-				h1 ^ A2(
-					$robinheghan$murmur3$Murmur3$multiplyBy,
-					$robinheghan$murmur3$Murmur3$c2,
-					A2(
-						$robinheghan$murmur3$Murmur3$rotlBy,
-						15,
-						A2($robinheghan$murmur3$Murmur3$multiplyBy, $robinheghan$murmur3$Murmur3$c1, k1))))) + 3864292196;
-	});
-var $robinheghan$murmur3$Murmur3$hashFold = F2(
-	function (c, data) {
-		var res = data.ad | ((255 & $elm$core$Char$toCode(c)) << data.aj);
-		var _v0 = data.aj;
-		if (_v0 === 24) {
-			return {
-				Y: data.Y + 1,
-				ad: 0,
-				R: A2($robinheghan$murmur3$Murmur3$mix, data.R, res),
-				aj: 0
-			};
-		} else {
-			return {Y: data.Y + 1, ad: res, R: data.R, aj: data.aj + 8};
-		}
-	});
-var $robinheghan$murmur3$Murmur3$hashString = F2(
-	function (seed, str) {
-		return $robinheghan$murmur3$Murmur3$finalize(
-			A3(
-				$elm$core$String$foldl,
-				$robinheghan$murmur3$Murmur3$hashFold,
-				A4($robinheghan$murmur3$Murmur3$HashData, 0, seed, 0, 0),
-				str));
-	});
-var $rtfeldman$elm_css$Hash$initialSeed = 15739;
-var $elm$core$String$fromList = _String_fromList;
-var $elm$core$Basics$negate = function (n) {
-	return -n;
+var $elm$http$Http$Sending = function (a) {
+	return {$: 0, a: a};
 };
-var $elm$core$Basics$modBy = _Basics_modBy;
-var $rtfeldman$elm_hex$Hex$unsafeToDigit = function (num) {
-	unsafeToDigit:
-	while (true) {
-		switch (num) {
-			case 0:
-				return '0';
-			case 1:
-				return '1';
-			case 2:
-				return '2';
-			case 3:
-				return '3';
-			case 4:
-				return '4';
-			case 5:
-				return '5';
-			case 6:
-				return '6';
-			case 7:
-				return '7';
-			case 8:
-				return '8';
-			case 9:
-				return '9';
-			case 10:
-				return 'a';
-			case 11:
-				return 'b';
-			case 12:
-				return 'c';
-			case 13:
-				return 'd';
-			case 14:
-				return 'e';
-			case 15:
-				return 'f';
-			default:
-				var $temp$num = num;
-				num = $temp$num;
-				continue unsafeToDigit;
-		}
+var $elm$http$Http$Timeout_ = {$: 1};
+var $elm$core$Dict$RBEmpty_elm_builtin = {$: -2};
+var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
+var $elm$core$Maybe$isJust = function (maybe) {
+	if (!maybe.$) {
+		return true;
+	} else {
+		return false;
 	}
 };
-var $rtfeldman$elm_hex$Hex$unsafePositiveToDigits = F2(
-	function (digits, num) {
-		unsafePositiveToDigits:
-		while (true) {
-			if (num < 16) {
-				return A2(
-					$elm$core$List$cons,
-					$rtfeldman$elm_hex$Hex$unsafeToDigit(num),
-					digits);
-			} else {
-				var $temp$digits = A2(
-					$elm$core$List$cons,
-					$rtfeldman$elm_hex$Hex$unsafeToDigit(
-						A2($elm$core$Basics$modBy, 16, num)),
-					digits),
-					$temp$num = (num / 16) | 0;
-				digits = $temp$digits;
-				num = $temp$num;
-				continue unsafePositiveToDigits;
-			}
-		}
-	});
-var $rtfeldman$elm_hex$Hex$toString = function (num) {
-	return $elm$core$String$fromList(
-		(num < 0) ? A2(
-			$elm$core$List$cons,
-			'-',
-			A2($rtfeldman$elm_hex$Hex$unsafePositiveToDigits, _List_Nil, -num)) : A2($rtfeldman$elm_hex$Hex$unsafePositiveToDigits, _List_Nil, num));
-};
-var $rtfeldman$elm_css$Hash$fromString = function (str) {
-	return A2(
-		$elm$core$String$cons,
-		'_',
-		$rtfeldman$elm_hex$Hex$toString(
-			A2($robinheghan$murmur3$Murmur3$hashString, $rtfeldman$elm_css$Hash$initialSeed, str)));
-};
+var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
 var $elm$core$Basics$compare = _Utils_compare;
 var $elm$core$Dict$get = F2(
 	function (targetKey, dict) {
@@ -5784,7 +5653,6 @@ var $elm$core$Dict$RBNode_elm_builtin = F5(
 	function (a, b, c, d, e) {
 		return {$: -1, a: a, b: b, c: c, d: d, e: e};
 	});
-var $elm$core$Dict$RBEmpty_elm_builtin = {$: -2};
 var $elm$core$Dict$Red = 0;
 var $elm$core$Dict$balance = F5(
 	function (color, key, value, left, right) {
@@ -5888,657 +5756,6 @@ var $elm$core$Dict$insert = F3(
 			return x;
 		}
 	});
-var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles = F2(
-	function (_v0, styles) {
-		var isCssStyles = _v0.b;
-		var cssTemplate = _v0.c;
-		if (isCssStyles) {
-			var _v1 = A2($elm$core$Dict$get, cssTemplate, styles);
-			if (!_v1.$) {
-				return styles;
-			} else {
-				return A3(
-					$elm$core$Dict$insert,
-					cssTemplate,
-					$rtfeldman$elm_css$Hash$fromString(cssTemplate),
-					styles);
-			}
-		} else {
-			return styles;
-		}
-	});
-var $elm$virtual_dom$VirtualDom$property = F2(
-	function (key, value) {
-		return A2(
-			_VirtualDom_property,
-			_VirtualDom_noInnerHtmlOrFormAction(key),
-			_VirtualDom_noJavaScriptOrHtmlJson(value));
-	});
-var $elm$json$Json$Encode$string = _Json_wrap;
-var $rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute = F2(
-	function (styles, _v0) {
-		var val = _v0.a;
-		var isCssStyles = _v0.b;
-		var cssTemplate = _v0.c;
-		if (isCssStyles) {
-			var _v1 = A2($elm$core$Dict$get, cssTemplate, styles);
-			if (!_v1.$) {
-				var classname = _v1.a;
-				return A2(
-					$elm$virtual_dom$VirtualDom$property,
-					'className',
-					$elm$json$Json$Encode$string(classname));
-			} else {
-				return A2(
-					$elm$virtual_dom$VirtualDom$property,
-					'className',
-					$elm$json$Json$Encode$string('_unstyled'));
-			}
-		} else {
-			return val;
-		}
-	});
-var $elm$virtual_dom$VirtualDom$attribute = F2(
-	function (key, value) {
-		return A2(
-			_VirtualDom_attribute,
-			_VirtualDom_noOnOrFormAction(key),
-			_VirtualDom_noJavaScriptOrHtmlUri(value));
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttributeNS = F2(
-	function (styles, _v0) {
-		var val = _v0.a;
-		var isCssStyles = _v0.b;
-		var cssTemplate = _v0.c;
-		if (isCssStyles) {
-			var _v1 = A2($elm$core$Dict$get, cssTemplate, styles);
-			if (!_v1.$) {
-				var classname = _v1.a;
-				return A2($elm$virtual_dom$VirtualDom$attribute, 'class', classname);
-			} else {
-				return A2($elm$virtual_dom$VirtualDom$attribute, 'class', '_unstyled');
-			}
-		} else {
-			return val;
-		}
-	});
-var $elm$virtual_dom$VirtualDom$keyedNode = function (tag) {
-	return _VirtualDom_keyedNode(
-		_VirtualDom_noScript(tag));
-};
-var $elm$virtual_dom$VirtualDom$keyedNodeNS = F2(
-	function (namespace, tag) {
-		return A2(
-			_VirtualDom_keyedNodeNS,
-			namespace,
-			_VirtualDom_noScript(tag));
-	});
-var $elm$virtual_dom$VirtualDom$node = function (tag) {
-	return _VirtualDom_node(
-		_VirtualDom_noScript(tag));
-};
-var $elm$virtual_dom$VirtualDom$nodeNS = F2(
-	function (namespace, tag) {
-		return A2(
-			_VirtualDom_nodeNS,
-			namespace,
-			_VirtualDom_noScript(tag));
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml = F2(
-	function (_v6, _v7) {
-		var key = _v6.a;
-		var html = _v6.b;
-		var pairs = _v7.a;
-		var styles = _v7.b;
-		switch (html.$) {
-			case 4:
-				var vdom = html.a;
-				return _Utils_Tuple2(
-					A2(
-						$elm$core$List$cons,
-						_Utils_Tuple2(key, vdom),
-						pairs),
-					styles);
-			case 0:
-				var elemType = html.a;
-				var properties = html.b;
-				var children = html.c;
-				var combinedStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, styles, properties);
-				var _v9 = A3(
-					$elm$core$List$foldl,
-					$rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml,
-					_Utils_Tuple2(_List_Nil, combinedStyles),
-					children);
-				var childNodes = _v9.a;
-				var finalStyles = _v9.b;
-				var vdom = A3(
-					$elm$virtual_dom$VirtualDom$node,
-					elemType,
-					A2(
-						$elm$core$List$map,
-						$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute(finalStyles),
-						properties),
-					$elm$core$List$reverse(childNodes));
-				return _Utils_Tuple2(
-					A2(
-						$elm$core$List$cons,
-						_Utils_Tuple2(key, vdom),
-						pairs),
-					finalStyles);
-			case 1:
-				var ns = html.a;
-				var elemType = html.b;
-				var properties = html.c;
-				var children = html.d;
-				var combinedStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, styles, properties);
-				var _v10 = A3(
-					$elm$core$List$foldl,
-					$rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml,
-					_Utils_Tuple2(_List_Nil, combinedStyles),
-					children);
-				var childNodes = _v10.a;
-				var finalStyles = _v10.b;
-				var vdom = A4(
-					$elm$virtual_dom$VirtualDom$nodeNS,
-					ns,
-					elemType,
-					A2(
-						$elm$core$List$map,
-						$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute(finalStyles),
-						properties),
-					$elm$core$List$reverse(childNodes));
-				return _Utils_Tuple2(
-					A2(
-						$elm$core$List$cons,
-						_Utils_Tuple2(key, vdom),
-						pairs),
-					finalStyles);
-			case 2:
-				var elemType = html.a;
-				var properties = html.b;
-				var children = html.c;
-				var combinedStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, styles, properties);
-				var _v11 = A3(
-					$elm$core$List$foldl,
-					$rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml,
-					_Utils_Tuple2(_List_Nil, combinedStyles),
-					children);
-				var childNodes = _v11.a;
-				var finalStyles = _v11.b;
-				var vdom = A3(
-					$elm$virtual_dom$VirtualDom$keyedNode,
-					elemType,
-					A2(
-						$elm$core$List$map,
-						$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute(finalStyles),
-						properties),
-					$elm$core$List$reverse(childNodes));
-				return _Utils_Tuple2(
-					A2(
-						$elm$core$List$cons,
-						_Utils_Tuple2(key, vdom),
-						pairs),
-					finalStyles);
-			default:
-				var ns = html.a;
-				var elemType = html.b;
-				var properties = html.c;
-				var children = html.d;
-				var combinedStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, styles, properties);
-				var _v12 = A3(
-					$elm$core$List$foldl,
-					$rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml,
-					_Utils_Tuple2(_List_Nil, combinedStyles),
-					children);
-				var childNodes = _v12.a;
-				var finalStyles = _v12.b;
-				var vdom = A4(
-					$elm$virtual_dom$VirtualDom$keyedNodeNS,
-					ns,
-					elemType,
-					A2(
-						$elm$core$List$map,
-						$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute(finalStyles),
-						properties),
-					$elm$core$List$reverse(childNodes));
-				return _Utils_Tuple2(
-					A2(
-						$elm$core$List$cons,
-						_Utils_Tuple2(key, vdom),
-						pairs),
-					finalStyles);
-		}
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml = F2(
-	function (html, _v0) {
-		var nodes = _v0.a;
-		var styles = _v0.b;
-		switch (html.$) {
-			case 4:
-				var vdomNode = html.a;
-				return _Utils_Tuple2(
-					A2($elm$core$List$cons, vdomNode, nodes),
-					styles);
-			case 0:
-				var elemType = html.a;
-				var properties = html.b;
-				var children = html.c;
-				var combinedStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, styles, properties);
-				var _v2 = A3(
-					$elm$core$List$foldl,
-					$rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml,
-					_Utils_Tuple2(_List_Nil, combinedStyles),
-					children);
-				var childNodes = _v2.a;
-				var finalStyles = _v2.b;
-				var vdomNode = A3(
-					$elm$virtual_dom$VirtualDom$node,
-					elemType,
-					A2(
-						$elm$core$List$map,
-						$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute(finalStyles),
-						properties),
-					$elm$core$List$reverse(childNodes));
-				return _Utils_Tuple2(
-					A2($elm$core$List$cons, vdomNode, nodes),
-					finalStyles);
-			case 1:
-				var ns = html.a;
-				var elemType = html.b;
-				var properties = html.c;
-				var children = html.d;
-				var combinedStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, styles, properties);
-				var _v3 = A3(
-					$elm$core$List$foldl,
-					$rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml,
-					_Utils_Tuple2(_List_Nil, combinedStyles),
-					children);
-				var childNodes = _v3.a;
-				var finalStyles = _v3.b;
-				var vdomNode = A4(
-					$elm$virtual_dom$VirtualDom$nodeNS,
-					ns,
-					elemType,
-					A2(
-						$elm$core$List$map,
-						$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttributeNS(finalStyles),
-						properties),
-					$elm$core$List$reverse(childNodes));
-				return _Utils_Tuple2(
-					A2($elm$core$List$cons, vdomNode, nodes),
-					finalStyles);
-			case 2:
-				var elemType = html.a;
-				var properties = html.b;
-				var children = html.c;
-				var combinedStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, styles, properties);
-				var _v4 = A3(
-					$elm$core$List$foldl,
-					$rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml,
-					_Utils_Tuple2(_List_Nil, combinedStyles),
-					children);
-				var childNodes = _v4.a;
-				var finalStyles = _v4.b;
-				var vdomNode = A3(
-					$elm$virtual_dom$VirtualDom$keyedNode,
-					elemType,
-					A2(
-						$elm$core$List$map,
-						$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute(finalStyles),
-						properties),
-					$elm$core$List$reverse(childNodes));
-				return _Utils_Tuple2(
-					A2($elm$core$List$cons, vdomNode, nodes),
-					finalStyles);
-			default:
-				var ns = html.a;
-				var elemType = html.b;
-				var properties = html.c;
-				var children = html.d;
-				var combinedStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, styles, properties);
-				var _v5 = A3(
-					$elm$core$List$foldl,
-					$rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml,
-					_Utils_Tuple2(_List_Nil, combinedStyles),
-					children);
-				var childNodes = _v5.a;
-				var finalStyles = _v5.b;
-				var vdomNode = A4(
-					$elm$virtual_dom$VirtualDom$keyedNodeNS,
-					ns,
-					elemType,
-					A2(
-						$elm$core$List$map,
-						$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttributeNS(finalStyles),
-						properties),
-					$elm$core$List$reverse(childNodes));
-				return _Utils_Tuple2(
-					A2($elm$core$List$cons, vdomNode, nodes),
-					finalStyles);
-		}
-	});
-var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
-var $elm$core$List$singleton = function (value) {
-	return _List_fromArray(
-		[value]);
-};
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$core$Dict$foldl = F3(
-	function (func, acc, dict) {
-		foldl:
-		while (true) {
-			if (dict.$ === -2) {
-				return acc;
-			} else {
-				var key = dict.b;
-				var value = dict.c;
-				var left = dict.d;
-				var right = dict.e;
-				var $temp$func = func,
-					$temp$acc = A3(
-					func,
-					key,
-					value,
-					A3($elm$core$Dict$foldl, func, acc, left)),
-					$temp$dict = right;
-				func = $temp$func;
-				acc = $temp$acc;
-				dict = $temp$dict;
-				continue foldl;
-			}
-		}
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$classnameStandin = '\u0007';
-var $elm$core$String$replace = F3(
-	function (before, after, string) {
-		return A2(
-			$elm$core$String$join,
-			after,
-			A2($elm$core$String$split, before, string));
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$styleToDeclaration = F3(
-	function (template, classname, declaration) {
-		return declaration + ('\n' + A3($elm$core$String$replace, $rtfeldman$elm_css$VirtualDom$Styled$classnameStandin, classname, template));
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$toDeclaration = function (dict) {
-	return A3($elm$core$Dict$foldl, $rtfeldman$elm_css$VirtualDom$Styled$styleToDeclaration, '', dict);
-};
-var $rtfeldman$elm_css$VirtualDom$Styled$toScopedDeclaration = F2(
-	function (scopingPrefix, dict) {
-		return A3(
-			$elm$core$Dict$foldl,
-			F3(
-				function (template, classname, declaration) {
-					return declaration + ('\n' + A3($elm$core$String$replace, '.' + $rtfeldman$elm_css$VirtualDom$Styled$classnameStandin, '#' + (scopingPrefix + ('.' + classname)), template));
-				}),
-			'',
-			dict);
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$toStyleNode = F2(
-	function (maybeNonce, accumulatedStyles) {
-		var cssText = function () {
-			if (!accumulatedStyles.$) {
-				var allStyles = accumulatedStyles.a;
-				return $rtfeldman$elm_css$VirtualDom$Styled$toDeclaration(allStyles);
-			} else {
-				var scope = accumulatedStyles.a;
-				var rootStyles = accumulatedStyles.b;
-				var descendantStyles = accumulatedStyles.c;
-				return A2($rtfeldman$elm_css$VirtualDom$Styled$toScopedDeclaration, scope, rootStyles) + ('\n' + A2($rtfeldman$elm_css$VirtualDom$Styled$toScopedDeclaration, scope + ' ', descendantStyles));
-			}
-		}();
-		return A3(
-			$elm$virtual_dom$VirtualDom$node,
-			'span',
-			_List_fromArray(
-				[
-					A2($elm$virtual_dom$VirtualDom$attribute, 'style', 'display: none;'),
-					A2($elm$virtual_dom$VirtualDom$attribute, 'class', 'elm-css-style-wrapper')
-				]),
-			_List_fromArray(
-				[
-					A3(
-					$elm$virtual_dom$VirtualDom$node,
-					'style',
-					function () {
-						if (!maybeNonce.$) {
-							var nonce = maybeNonce.a;
-							return _List_fromArray(
-								[
-									A2($elm$virtual_dom$VirtualDom$attribute, 'nonce', nonce)
-								]);
-						} else {
-							return _List_Nil;
-						}
-					}(),
-					$elm$core$List$singleton(
-						$elm$virtual_dom$VirtualDom$text(cssText)))
-				]));
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$unstyle = F4(
-	function (maybeNonce, elemType, properties, children) {
-		var initialStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, $elm$core$Dict$empty, properties);
-		var _v0 = A3(
-			$elm$core$List$foldl,
-			$rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml,
-			_Utils_Tuple2(_List_Nil, initialStyles),
-			children);
-		var childNodes = _v0.a;
-		var styles = _v0.b;
-		var styleNode = A2(
-			$rtfeldman$elm_css$VirtualDom$Styled$toStyleNode,
-			maybeNonce,
-			$rtfeldman$elm_css$VirtualDom$Styled$UnscopedStyles(styles));
-		var unstyledProperties = A2(
-			$elm$core$List$map,
-			$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute(styles),
-			properties);
-		return A3(
-			$elm$virtual_dom$VirtualDom$node,
-			elemType,
-			unstyledProperties,
-			A2(
-				$elm$core$List$cons,
-				styleNode,
-				$elm$core$List$reverse(childNodes)));
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$containsKey = F2(
-	function (key, pairs) {
-		containsKey:
-		while (true) {
-			if (!pairs.b) {
-				return false;
-			} else {
-				var _v1 = pairs.a;
-				var str = _v1.a;
-				var rest = pairs.b;
-				if (_Utils_eq(key, str)) {
-					return true;
-				} else {
-					var $temp$key = key,
-						$temp$pairs = rest;
-					key = $temp$key;
-					pairs = $temp$pairs;
-					continue containsKey;
-				}
-			}
-		}
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$getUnusedKey = F2(
-	function (_default, pairs) {
-		getUnusedKey:
-		while (true) {
-			if (!pairs.b) {
-				return _default;
-			} else {
-				var _v1 = pairs.a;
-				var firstKey = _v1.a;
-				var rest = pairs.b;
-				var newKey = '_' + firstKey;
-				if (A2($rtfeldman$elm_css$VirtualDom$Styled$containsKey, newKey, rest)) {
-					var $temp$default = newKey,
-						$temp$pairs = rest;
-					_default = $temp$default;
-					pairs = $temp$pairs;
-					continue getUnusedKey;
-				} else {
-					return newKey;
-				}
-			}
-		}
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$toKeyedStyleNode = F3(
-	function (maybeNonce, accumulatedStyles, keyedChildNodes) {
-		var styleNodeKey = A2($rtfeldman$elm_css$VirtualDom$Styled$getUnusedKey, '_', keyedChildNodes);
-		var finalNode = A2($rtfeldman$elm_css$VirtualDom$Styled$toStyleNode, maybeNonce, accumulatedStyles);
-		return _Utils_Tuple2(styleNodeKey, finalNode);
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$unstyleKeyed = F4(
-	function (maybeNonce, elemType, properties, keyedChildren) {
-		var initialStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, $elm$core$Dict$empty, properties);
-		var _v0 = A3(
-			$elm$core$List$foldl,
-			$rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml,
-			_Utils_Tuple2(_List_Nil, initialStyles),
-			keyedChildren);
-		var keyedChildNodes = _v0.a;
-		var styles = _v0.b;
-		var keyedStyleNode = A3(
-			$rtfeldman$elm_css$VirtualDom$Styled$toKeyedStyleNode,
-			maybeNonce,
-			$rtfeldman$elm_css$VirtualDom$Styled$UnscopedStyles(styles),
-			keyedChildNodes);
-		var unstyledProperties = A2(
-			$elm$core$List$map,
-			$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute(styles),
-			properties);
-		return A3(
-			$elm$virtual_dom$VirtualDom$keyedNode,
-			elemType,
-			unstyledProperties,
-			A2(
-				$elm$core$List$cons,
-				keyedStyleNode,
-				$elm$core$List$reverse(keyedChildNodes)));
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$unstyleKeyedNS = F5(
-	function (maybeNonce, ns, elemType, properties, keyedChildren) {
-		var initialStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, $elm$core$Dict$empty, properties);
-		var _v0 = A3(
-			$elm$core$List$foldl,
-			$rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml,
-			_Utils_Tuple2(_List_Nil, initialStyles),
-			keyedChildren);
-		var keyedChildNodes = _v0.a;
-		var styles = _v0.b;
-		var keyedStyleNode = A3(
-			$rtfeldman$elm_css$VirtualDom$Styled$toKeyedStyleNode,
-			maybeNonce,
-			$rtfeldman$elm_css$VirtualDom$Styled$UnscopedStyles(styles),
-			keyedChildNodes);
-		var unstyledProperties = A2(
-			$elm$core$List$map,
-			$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttributeNS(styles),
-			properties);
-		return A4(
-			$elm$virtual_dom$VirtualDom$keyedNodeNS,
-			ns,
-			elemType,
-			unstyledProperties,
-			A2(
-				$elm$core$List$cons,
-				keyedStyleNode,
-				$elm$core$List$reverse(keyedChildNodes)));
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$unstyleNS = F5(
-	function (maybeNonce, ns, elemType, properties, children) {
-		var initialStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, $elm$core$Dict$empty, properties);
-		var _v0 = A3(
-			$elm$core$List$foldl,
-			$rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml,
-			_Utils_Tuple2(_List_Nil, initialStyles),
-			children);
-		var childNodes = _v0.a;
-		var styles = _v0.b;
-		var styleNode = A2(
-			$rtfeldman$elm_css$VirtualDom$Styled$toStyleNode,
-			maybeNonce,
-			$rtfeldman$elm_css$VirtualDom$Styled$UnscopedStyles(styles));
-		var unstyledProperties = A2(
-			$elm$core$List$map,
-			$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttributeNS(styles),
-			properties);
-		return A4(
-			$elm$virtual_dom$VirtualDom$nodeNS,
-			ns,
-			elemType,
-			unstyledProperties,
-			A2(
-				$elm$core$List$cons,
-				styleNode,
-				$elm$core$List$reverse(childNodes)));
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled = function (vdom) {
-	switch (vdom.$) {
-		case 4:
-			var plainNode = vdom.a;
-			return plainNode;
-		case 0:
-			var elemType = vdom.a;
-			var properties = vdom.b;
-			var children = vdom.c;
-			return A4($rtfeldman$elm_css$VirtualDom$Styled$unstyle, $elm$core$Maybe$Nothing, elemType, properties, children);
-		case 1:
-			var ns = vdom.a;
-			var elemType = vdom.b;
-			var properties = vdom.c;
-			var children = vdom.d;
-			return A5($rtfeldman$elm_css$VirtualDom$Styled$unstyleNS, $elm$core$Maybe$Nothing, ns, elemType, properties, children);
-		case 2:
-			var elemType = vdom.a;
-			var properties = vdom.b;
-			var children = vdom.c;
-			return A4($rtfeldman$elm_css$VirtualDom$Styled$unstyleKeyed, $elm$core$Maybe$Nothing, elemType, properties, children);
-		default:
-			var ns = vdom.a;
-			var elemType = vdom.b;
-			var properties = vdom.c;
-			var children = vdom.d;
-			return A5($rtfeldman$elm_css$VirtualDom$Styled$unstyleKeyedNS, $elm$core$Maybe$Nothing, ns, elemType, properties, children);
-	}
-};
-var $rtfeldman$elm_css$Html$Styled$toUnstyled = $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled;
-var $author$project$Main$GotResult = function (a) {
-	return {$: 1, a: a};
-};
-var $elm$json$Json$Decode$decodeString = _Json_runOnString;
-var $elm$http$Http$BadStatus_ = F2(
-	function (a, b) {
-		return {$: 3, a: a, b: b};
-	});
-var $elm$http$Http$BadUrl_ = function (a) {
-	return {$: 0, a: a};
-};
-var $elm$http$Http$GoodStatus_ = F2(
-	function (a, b) {
-		return {$: 4, a: a, b: b};
-	});
-var $elm$http$Http$NetworkError_ = {$: 2};
-var $elm$http$Http$Receiving = function (a) {
-	return {$: 1, a: a};
-};
-var $elm$http$Http$Sending = function (a) {
-	return {$: 0, a: a};
-};
-var $elm$http$Http$Timeout_ = {$: 1};
-var $elm$core$Maybe$isJust = function (maybe) {
-	if (!maybe.$) {
-		return true;
-	} else {
-		return false;
-	}
-};
-var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
 var $elm$core$Dict$getMin = function (dict) {
 	getMin:
 	while (true) {
@@ -6912,6 +6129,11 @@ var $elm$core$Dict$update = F3(
 			return A2($elm$core$Dict$remove, targetKey, dictionary);
 		}
 	});
+var $elm$core$Basics$composeR = F3(
+	function (f, g, x) {
+		return g(
+			f(x));
+	});
 var $elm$http$Http$expectStringResponse = F2(
 	function (toMsg, toResult) {
 		return A3(
@@ -7176,7 +6398,7 @@ var $author$project$Main$resultDecoder = A6(
 	$elm$json$Json$Decode$map5,
 	F5(
 		function (pull_request, release, status, title, branches) {
-			return {aL: branches, aa: '', P: pull_request, aT: release, aX: status, aE: title};
+			return {aL: branches, aa: '', P: pull_request, aT: release, aX: status, ao: title};
 		}),
 	A2($elm$json$Json$Decode$field, 'pull_request', $elm$json$Json$Decode$int),
 	A2($elm$json$Json$Decode$field, 'release', $elm$json$Json$Decode$string),
@@ -7244,6 +6466,13 @@ var $rtfeldman$elm_css$Html$Styled$button = $rtfeldman$elm_css$Html$Styled$node(
 var $rtfeldman$elm_css$VirtualDom$Styled$Attribute = F3(
 	function (a, b, c) {
 		return {$: 0, a: a, b: b, c: c};
+	});
+var $elm$virtual_dom$VirtualDom$attribute = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_attribute,
+			_VirtualDom_noOnOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlUri(value));
 	});
 var $elm$core$List$any = F2(
 	function (isOkay, list) {
@@ -8052,6 +7281,166 @@ var $rtfeldman$elm_css$Css$Structure$concatMapLastStyleBlock = F2(
 			first,
 			A2($rtfeldman$elm_css$Css$Structure$concatMapLastStyleBlock, update, rest));
 	});
+var $elm$core$String$cons = _String_cons;
+var $robinheghan$murmur3$Murmur3$HashData = F4(
+	function (shift, seed, hash, charsProcessed) {
+		return {Y: charsProcessed, ad: hash, R: seed, aj: shift};
+	});
+var $robinheghan$murmur3$Murmur3$c1 = 3432918353;
+var $robinheghan$murmur3$Murmur3$c2 = 461845907;
+var $elm$core$Bitwise$and = _Bitwise_and;
+var $elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
+var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
+var $robinheghan$murmur3$Murmur3$multiplyBy = F2(
+	function (b, a) {
+		return ((a & 65535) * b) + ((((a >>> 16) * b) & 65535) << 16);
+	});
+var $elm$core$Basics$neq = _Utils_notEqual;
+var $elm$core$Bitwise$or = _Bitwise_or;
+var $robinheghan$murmur3$Murmur3$rotlBy = F2(
+	function (b, a) {
+		return (a << b) | (a >>> (32 - b));
+	});
+var $elm$core$Bitwise$xor = _Bitwise_xor;
+var $robinheghan$murmur3$Murmur3$finalize = function (data) {
+	var acc = (!(!data.ad)) ? (data.R ^ A2(
+		$robinheghan$murmur3$Murmur3$multiplyBy,
+		$robinheghan$murmur3$Murmur3$c2,
+		A2(
+			$robinheghan$murmur3$Murmur3$rotlBy,
+			15,
+			A2($robinheghan$murmur3$Murmur3$multiplyBy, $robinheghan$murmur3$Murmur3$c1, data.ad)))) : data.R;
+	var h0 = acc ^ data.Y;
+	var h1 = A2($robinheghan$murmur3$Murmur3$multiplyBy, 2246822507, h0 ^ (h0 >>> 16));
+	var h2 = A2($robinheghan$murmur3$Murmur3$multiplyBy, 3266489909, h1 ^ (h1 >>> 13));
+	return (h2 ^ (h2 >>> 16)) >>> 0;
+};
+var $elm$core$String$foldl = _String_foldl;
+var $robinheghan$murmur3$Murmur3$mix = F2(
+	function (h1, k1) {
+		return A2(
+			$robinheghan$murmur3$Murmur3$multiplyBy,
+			5,
+			A2(
+				$robinheghan$murmur3$Murmur3$rotlBy,
+				13,
+				h1 ^ A2(
+					$robinheghan$murmur3$Murmur3$multiplyBy,
+					$robinheghan$murmur3$Murmur3$c2,
+					A2(
+						$robinheghan$murmur3$Murmur3$rotlBy,
+						15,
+						A2($robinheghan$murmur3$Murmur3$multiplyBy, $robinheghan$murmur3$Murmur3$c1, k1))))) + 3864292196;
+	});
+var $robinheghan$murmur3$Murmur3$hashFold = F2(
+	function (c, data) {
+		var res = data.ad | ((255 & $elm$core$Char$toCode(c)) << data.aj);
+		var _v0 = data.aj;
+		if (_v0 === 24) {
+			return {
+				Y: data.Y + 1,
+				ad: 0,
+				R: A2($robinheghan$murmur3$Murmur3$mix, data.R, res),
+				aj: 0
+			};
+		} else {
+			return {Y: data.Y + 1, ad: res, R: data.R, aj: data.aj + 8};
+		}
+	});
+var $robinheghan$murmur3$Murmur3$hashString = F2(
+	function (seed, str) {
+		return $robinheghan$murmur3$Murmur3$finalize(
+			A3(
+				$elm$core$String$foldl,
+				$robinheghan$murmur3$Murmur3$hashFold,
+				A4($robinheghan$murmur3$Murmur3$HashData, 0, seed, 0, 0),
+				str));
+	});
+var $rtfeldman$elm_css$Hash$initialSeed = 15739;
+var $elm$core$String$fromList = _String_fromList;
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $elm$core$Basics$modBy = _Basics_modBy;
+var $rtfeldman$elm_hex$Hex$unsafeToDigit = function (num) {
+	unsafeToDigit:
+	while (true) {
+		switch (num) {
+			case 0:
+				return '0';
+			case 1:
+				return '1';
+			case 2:
+				return '2';
+			case 3:
+				return '3';
+			case 4:
+				return '4';
+			case 5:
+				return '5';
+			case 6:
+				return '6';
+			case 7:
+				return '7';
+			case 8:
+				return '8';
+			case 9:
+				return '9';
+			case 10:
+				return 'a';
+			case 11:
+				return 'b';
+			case 12:
+				return 'c';
+			case 13:
+				return 'd';
+			case 14:
+				return 'e';
+			case 15:
+				return 'f';
+			default:
+				var $temp$num = num;
+				num = $temp$num;
+				continue unsafeToDigit;
+		}
+	}
+};
+var $rtfeldman$elm_hex$Hex$unsafePositiveToDigits = F2(
+	function (digits, num) {
+		unsafePositiveToDigits:
+		while (true) {
+			if (num < 16) {
+				return A2(
+					$elm$core$List$cons,
+					$rtfeldman$elm_hex$Hex$unsafeToDigit(num),
+					digits);
+			} else {
+				var $temp$digits = A2(
+					$elm$core$List$cons,
+					$rtfeldman$elm_hex$Hex$unsafeToDigit(
+						A2($elm$core$Basics$modBy, 16, num)),
+					digits),
+					$temp$num = (num / 16) | 0;
+				digits = $temp$digits;
+				num = $temp$num;
+				continue unsafePositiveToDigits;
+			}
+		}
+	});
+var $rtfeldman$elm_hex$Hex$toString = function (num) {
+	return $elm$core$String$fromList(
+		(num < 0) ? A2(
+			$elm$core$List$cons,
+			'-',
+			A2($rtfeldman$elm_hex$Hex$unsafePositiveToDigits, _List_Nil, -num)) : A2($rtfeldman$elm_hex$Hex$unsafePositiveToDigits, _List_Nil, num));
+};
+var $rtfeldman$elm_css$Hash$fromString = function (str) {
+	return A2(
+		$elm$core$String$cons,
+		'_',
+		$rtfeldman$elm_hex$Hex$toString(
+			A2($robinheghan$murmur3$Murmur3$hashString, $rtfeldman$elm_css$Hash$initialSeed, str)));
+};
 var $elm$core$List$head = function (list) {
 	if (list.b) {
 		var x = list.a;
@@ -8138,6 +7527,10 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$resolveFontFeatureValues = functio
 		[
 			$rtfeldman$elm_css$Css$Structure$FontFeatureValues(newTuples)
 		]);
+};
+var $elm$core$List$singleton = function (value) {
+	return _List_fromArray(
+		[value]);
 };
 var $rtfeldman$elm_css$Css$Structure$styleBlockToMediaRule = F2(
 	function (mediaQueries, declaration) {
@@ -8739,6 +8132,7 @@ var $rtfeldman$elm_css$Css$Preprocess$stylesheet = function (snippets) {
 var $rtfeldman$elm_css$Css$Structure$ClassSelector = function (a) {
 	return {$: 0, a: a};
 };
+var $rtfeldman$elm_css$VirtualDom$Styled$classnameStandin = '\u0007';
 var $rtfeldman$elm_css$VirtualDom$Styled$templateSelector = $rtfeldman$elm_css$Css$Structure$UniversalSelectorSequence(
 	_List_fromArray(
 		[
@@ -8764,6 +8158,13 @@ var $rtfeldman$elm_css$Html$Styled$Internal$css = function (styles) {
 };
 var $rtfeldman$elm_css$Html$Styled$Attributes$css = $rtfeldman$elm_css$Html$Styled$Internal$css;
 var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$virtual_dom$VirtualDom$property = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_property,
+			_VirtualDom_noInnerHtmlOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlJson(value));
+	});
 var $rtfeldman$elm_css$VirtualDom$Styled$property = F2(
 	function (key, value) {
 		return A3(
@@ -8850,6 +8251,7 @@ var $rtfeldman$elm_css$Css$prop1 = F2(
 		return A2($rtfeldman$elm_css$Css$property, key, arg.z);
 	});
 var $rtfeldman$elm_css$Css$padding = $rtfeldman$elm_css$Css$prop1('padding');
+var $elm$json$Json$Encode$string = _Json_wrap;
 var $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -8868,7 +8270,7 @@ var $rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
 			bn: 0,
 			ab: 0,
 			l: 0,
-			ax: 0,
+			ay: 0,
 			ae: 0,
 			E: 0,
 			af: 0,
@@ -8879,7 +8281,7 @@ var $rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
 			ah: 0,
 			G: numericValue,
 			am: 0,
-			ao: unitLabel,
+			ap: unitLabel,
 			aH: units,
 			z: _Utils_ap(
 				$elm$core$String$fromFloat(numericValue),
@@ -8890,11 +8292,613 @@ var $rtfeldman$elm_css$Css$px = A2($rtfeldman$elm_css$Css$Internal$lengthConvert
 var $rtfeldman$elm_css$VirtualDom$Styled$Unstyled = function (a) {
 	return {$: 4, a: a};
 };
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $rtfeldman$elm_css$VirtualDom$Styled$text = function (str) {
 	return $rtfeldman$elm_css$VirtualDom$Styled$Unstyled(
 		$elm$virtual_dom$VirtualDom$text(str));
 };
 var $rtfeldman$elm_css$Html$Styled$text = $rtfeldman$elm_css$VirtualDom$Styled$text;
+var $rtfeldman$elm_css$VirtualDom$Styled$UnscopedStyles = function (a) {
+	return {$: 0, a: a};
+};
+var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles = F2(
+	function (_v0, styles) {
+		var isCssStyles = _v0.b;
+		var cssTemplate = _v0.c;
+		if (isCssStyles) {
+			var _v1 = A2($elm$core$Dict$get, cssTemplate, styles);
+			if (!_v1.$) {
+				return styles;
+			} else {
+				return A3(
+					$elm$core$Dict$insert,
+					cssTemplate,
+					$rtfeldman$elm_css$Hash$fromString(cssTemplate),
+					styles);
+			}
+		} else {
+			return styles;
+		}
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute = F2(
+	function (styles, _v0) {
+		var val = _v0.a;
+		var isCssStyles = _v0.b;
+		var cssTemplate = _v0.c;
+		if (isCssStyles) {
+			var _v1 = A2($elm$core$Dict$get, cssTemplate, styles);
+			if (!_v1.$) {
+				var classname = _v1.a;
+				return A2(
+					$elm$virtual_dom$VirtualDom$property,
+					'className',
+					$elm$json$Json$Encode$string(classname));
+			} else {
+				return A2(
+					$elm$virtual_dom$VirtualDom$property,
+					'className',
+					$elm$json$Json$Encode$string('_unstyled'));
+			}
+		} else {
+			return val;
+		}
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttributeNS = F2(
+	function (styles, _v0) {
+		var val = _v0.a;
+		var isCssStyles = _v0.b;
+		var cssTemplate = _v0.c;
+		if (isCssStyles) {
+			var _v1 = A2($elm$core$Dict$get, cssTemplate, styles);
+			if (!_v1.$) {
+				var classname = _v1.a;
+				return A2($elm$virtual_dom$VirtualDom$attribute, 'class', classname);
+			} else {
+				return A2($elm$virtual_dom$VirtualDom$attribute, 'class', '_unstyled');
+			}
+		} else {
+			return val;
+		}
+	});
+var $elm$virtual_dom$VirtualDom$keyedNode = function (tag) {
+	return _VirtualDom_keyedNode(
+		_VirtualDom_noScript(tag));
+};
+var $elm$virtual_dom$VirtualDom$keyedNodeNS = F2(
+	function (namespace, tag) {
+		return A2(
+			_VirtualDom_keyedNodeNS,
+			namespace,
+			_VirtualDom_noScript(tag));
+	});
+var $elm$virtual_dom$VirtualDom$node = function (tag) {
+	return _VirtualDom_node(
+		_VirtualDom_noScript(tag));
+};
+var $elm$virtual_dom$VirtualDom$nodeNS = F2(
+	function (namespace, tag) {
+		return A2(
+			_VirtualDom_nodeNS,
+			namespace,
+			_VirtualDom_noScript(tag));
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml = F2(
+	function (_v6, _v7) {
+		var key = _v6.a;
+		var html = _v6.b;
+		var pairs = _v7.a;
+		var styles = _v7.b;
+		switch (html.$) {
+			case 4:
+				var vdom = html.a;
+				return _Utils_Tuple2(
+					A2(
+						$elm$core$List$cons,
+						_Utils_Tuple2(key, vdom),
+						pairs),
+					styles);
+			case 0:
+				var elemType = html.a;
+				var properties = html.b;
+				var children = html.c;
+				var combinedStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, styles, properties);
+				var _v9 = A3(
+					$elm$core$List$foldl,
+					$rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml,
+					_Utils_Tuple2(_List_Nil, combinedStyles),
+					children);
+				var childNodes = _v9.a;
+				var finalStyles = _v9.b;
+				var vdom = A3(
+					$elm$virtual_dom$VirtualDom$node,
+					elemType,
+					A2(
+						$elm$core$List$map,
+						$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute(finalStyles),
+						properties),
+					$elm$core$List$reverse(childNodes));
+				return _Utils_Tuple2(
+					A2(
+						$elm$core$List$cons,
+						_Utils_Tuple2(key, vdom),
+						pairs),
+					finalStyles);
+			case 1:
+				var ns = html.a;
+				var elemType = html.b;
+				var properties = html.c;
+				var children = html.d;
+				var combinedStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, styles, properties);
+				var _v10 = A3(
+					$elm$core$List$foldl,
+					$rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml,
+					_Utils_Tuple2(_List_Nil, combinedStyles),
+					children);
+				var childNodes = _v10.a;
+				var finalStyles = _v10.b;
+				var vdom = A4(
+					$elm$virtual_dom$VirtualDom$nodeNS,
+					ns,
+					elemType,
+					A2(
+						$elm$core$List$map,
+						$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute(finalStyles),
+						properties),
+					$elm$core$List$reverse(childNodes));
+				return _Utils_Tuple2(
+					A2(
+						$elm$core$List$cons,
+						_Utils_Tuple2(key, vdom),
+						pairs),
+					finalStyles);
+			case 2:
+				var elemType = html.a;
+				var properties = html.b;
+				var children = html.c;
+				var combinedStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, styles, properties);
+				var _v11 = A3(
+					$elm$core$List$foldl,
+					$rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml,
+					_Utils_Tuple2(_List_Nil, combinedStyles),
+					children);
+				var childNodes = _v11.a;
+				var finalStyles = _v11.b;
+				var vdom = A3(
+					$elm$virtual_dom$VirtualDom$keyedNode,
+					elemType,
+					A2(
+						$elm$core$List$map,
+						$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute(finalStyles),
+						properties),
+					$elm$core$List$reverse(childNodes));
+				return _Utils_Tuple2(
+					A2(
+						$elm$core$List$cons,
+						_Utils_Tuple2(key, vdom),
+						pairs),
+					finalStyles);
+			default:
+				var ns = html.a;
+				var elemType = html.b;
+				var properties = html.c;
+				var children = html.d;
+				var combinedStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, styles, properties);
+				var _v12 = A3(
+					$elm$core$List$foldl,
+					$rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml,
+					_Utils_Tuple2(_List_Nil, combinedStyles),
+					children);
+				var childNodes = _v12.a;
+				var finalStyles = _v12.b;
+				var vdom = A4(
+					$elm$virtual_dom$VirtualDom$keyedNodeNS,
+					ns,
+					elemType,
+					A2(
+						$elm$core$List$map,
+						$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute(finalStyles),
+						properties),
+					$elm$core$List$reverse(childNodes));
+				return _Utils_Tuple2(
+					A2(
+						$elm$core$List$cons,
+						_Utils_Tuple2(key, vdom),
+						pairs),
+					finalStyles);
+		}
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml = F2(
+	function (html, _v0) {
+		var nodes = _v0.a;
+		var styles = _v0.b;
+		switch (html.$) {
+			case 4:
+				var vdomNode = html.a;
+				return _Utils_Tuple2(
+					A2($elm$core$List$cons, vdomNode, nodes),
+					styles);
+			case 0:
+				var elemType = html.a;
+				var properties = html.b;
+				var children = html.c;
+				var combinedStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, styles, properties);
+				var _v2 = A3(
+					$elm$core$List$foldl,
+					$rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml,
+					_Utils_Tuple2(_List_Nil, combinedStyles),
+					children);
+				var childNodes = _v2.a;
+				var finalStyles = _v2.b;
+				var vdomNode = A3(
+					$elm$virtual_dom$VirtualDom$node,
+					elemType,
+					A2(
+						$elm$core$List$map,
+						$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute(finalStyles),
+						properties),
+					$elm$core$List$reverse(childNodes));
+				return _Utils_Tuple2(
+					A2($elm$core$List$cons, vdomNode, nodes),
+					finalStyles);
+			case 1:
+				var ns = html.a;
+				var elemType = html.b;
+				var properties = html.c;
+				var children = html.d;
+				var combinedStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, styles, properties);
+				var _v3 = A3(
+					$elm$core$List$foldl,
+					$rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml,
+					_Utils_Tuple2(_List_Nil, combinedStyles),
+					children);
+				var childNodes = _v3.a;
+				var finalStyles = _v3.b;
+				var vdomNode = A4(
+					$elm$virtual_dom$VirtualDom$nodeNS,
+					ns,
+					elemType,
+					A2(
+						$elm$core$List$map,
+						$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttributeNS(finalStyles),
+						properties),
+					$elm$core$List$reverse(childNodes));
+				return _Utils_Tuple2(
+					A2($elm$core$List$cons, vdomNode, nodes),
+					finalStyles);
+			case 2:
+				var elemType = html.a;
+				var properties = html.b;
+				var children = html.c;
+				var combinedStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, styles, properties);
+				var _v4 = A3(
+					$elm$core$List$foldl,
+					$rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml,
+					_Utils_Tuple2(_List_Nil, combinedStyles),
+					children);
+				var childNodes = _v4.a;
+				var finalStyles = _v4.b;
+				var vdomNode = A3(
+					$elm$virtual_dom$VirtualDom$keyedNode,
+					elemType,
+					A2(
+						$elm$core$List$map,
+						$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute(finalStyles),
+						properties),
+					$elm$core$List$reverse(childNodes));
+				return _Utils_Tuple2(
+					A2($elm$core$List$cons, vdomNode, nodes),
+					finalStyles);
+			default:
+				var ns = html.a;
+				var elemType = html.b;
+				var properties = html.c;
+				var children = html.d;
+				var combinedStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, styles, properties);
+				var _v5 = A3(
+					$elm$core$List$foldl,
+					$rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml,
+					_Utils_Tuple2(_List_Nil, combinedStyles),
+					children);
+				var childNodes = _v5.a;
+				var finalStyles = _v5.b;
+				var vdomNode = A4(
+					$elm$virtual_dom$VirtualDom$keyedNodeNS,
+					ns,
+					elemType,
+					A2(
+						$elm$core$List$map,
+						$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttributeNS(finalStyles),
+						properties),
+					$elm$core$List$reverse(childNodes));
+				return _Utils_Tuple2(
+					A2($elm$core$List$cons, vdomNode, nodes),
+					finalStyles);
+		}
+	});
+var $elm$core$Dict$foldl = F3(
+	function (func, acc, dict) {
+		foldl:
+		while (true) {
+			if (dict.$ === -2) {
+				return acc;
+			} else {
+				var key = dict.b;
+				var value = dict.c;
+				var left = dict.d;
+				var right = dict.e;
+				var $temp$func = func,
+					$temp$acc = A3(
+					func,
+					key,
+					value,
+					A3($elm$core$Dict$foldl, func, acc, left)),
+					$temp$dict = right;
+				func = $temp$func;
+				acc = $temp$acc;
+				dict = $temp$dict;
+				continue foldl;
+			}
+		}
+	});
+var $elm$core$String$replace = F3(
+	function (before, after, string) {
+		return A2(
+			$elm$core$String$join,
+			after,
+			A2($elm$core$String$split, before, string));
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$styleToDeclaration = F3(
+	function (template, classname, declaration) {
+		return declaration + ('\n' + A3($elm$core$String$replace, $rtfeldman$elm_css$VirtualDom$Styled$classnameStandin, classname, template));
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$toDeclaration = function (dict) {
+	return A3($elm$core$Dict$foldl, $rtfeldman$elm_css$VirtualDom$Styled$styleToDeclaration, '', dict);
+};
+var $rtfeldman$elm_css$VirtualDom$Styled$toScopedDeclaration = F2(
+	function (scopingPrefix, dict) {
+		return A3(
+			$elm$core$Dict$foldl,
+			F3(
+				function (template, classname, declaration) {
+					return declaration + ('\n' + A3($elm$core$String$replace, '.' + $rtfeldman$elm_css$VirtualDom$Styled$classnameStandin, '#' + (scopingPrefix + ('.' + classname)), template));
+				}),
+			'',
+			dict);
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$toStyleNode = F2(
+	function (maybeNonce, accumulatedStyles) {
+		var cssText = function () {
+			if (!accumulatedStyles.$) {
+				var allStyles = accumulatedStyles.a;
+				return $rtfeldman$elm_css$VirtualDom$Styled$toDeclaration(allStyles);
+			} else {
+				var scope = accumulatedStyles.a;
+				var rootStyles = accumulatedStyles.b;
+				var descendantStyles = accumulatedStyles.c;
+				return A2($rtfeldman$elm_css$VirtualDom$Styled$toScopedDeclaration, scope, rootStyles) + ('\n' + A2($rtfeldman$elm_css$VirtualDom$Styled$toScopedDeclaration, scope + ' ', descendantStyles));
+			}
+		}();
+		return A3(
+			$elm$virtual_dom$VirtualDom$node,
+			'span',
+			_List_fromArray(
+				[
+					A2($elm$virtual_dom$VirtualDom$attribute, 'style', 'display: none;'),
+					A2($elm$virtual_dom$VirtualDom$attribute, 'class', 'elm-css-style-wrapper')
+				]),
+			_List_fromArray(
+				[
+					A3(
+					$elm$virtual_dom$VirtualDom$node,
+					'style',
+					function () {
+						if (!maybeNonce.$) {
+							var nonce = maybeNonce.a;
+							return _List_fromArray(
+								[
+									A2($elm$virtual_dom$VirtualDom$attribute, 'nonce', nonce)
+								]);
+						} else {
+							return _List_Nil;
+						}
+					}(),
+					$elm$core$List$singleton(
+						$elm$virtual_dom$VirtualDom$text(cssText)))
+				]));
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$unstyle = F4(
+	function (maybeNonce, elemType, properties, children) {
+		var initialStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, $elm$core$Dict$empty, properties);
+		var _v0 = A3(
+			$elm$core$List$foldl,
+			$rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml,
+			_Utils_Tuple2(_List_Nil, initialStyles),
+			children);
+		var childNodes = _v0.a;
+		var styles = _v0.b;
+		var styleNode = A2(
+			$rtfeldman$elm_css$VirtualDom$Styled$toStyleNode,
+			maybeNonce,
+			$rtfeldman$elm_css$VirtualDom$Styled$UnscopedStyles(styles));
+		var unstyledProperties = A2(
+			$elm$core$List$map,
+			$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute(styles),
+			properties);
+		return A3(
+			$elm$virtual_dom$VirtualDom$node,
+			elemType,
+			unstyledProperties,
+			A2(
+				$elm$core$List$cons,
+				styleNode,
+				$elm$core$List$reverse(childNodes)));
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$containsKey = F2(
+	function (key, pairs) {
+		containsKey:
+		while (true) {
+			if (!pairs.b) {
+				return false;
+			} else {
+				var _v1 = pairs.a;
+				var str = _v1.a;
+				var rest = pairs.b;
+				if (_Utils_eq(key, str)) {
+					return true;
+				} else {
+					var $temp$key = key,
+						$temp$pairs = rest;
+					key = $temp$key;
+					pairs = $temp$pairs;
+					continue containsKey;
+				}
+			}
+		}
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$getUnusedKey = F2(
+	function (_default, pairs) {
+		getUnusedKey:
+		while (true) {
+			if (!pairs.b) {
+				return _default;
+			} else {
+				var _v1 = pairs.a;
+				var firstKey = _v1.a;
+				var rest = pairs.b;
+				var newKey = '_' + firstKey;
+				if (A2($rtfeldman$elm_css$VirtualDom$Styled$containsKey, newKey, rest)) {
+					var $temp$default = newKey,
+						$temp$pairs = rest;
+					_default = $temp$default;
+					pairs = $temp$pairs;
+					continue getUnusedKey;
+				} else {
+					return newKey;
+				}
+			}
+		}
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$toKeyedStyleNode = F3(
+	function (maybeNonce, accumulatedStyles, keyedChildNodes) {
+		var styleNodeKey = A2($rtfeldman$elm_css$VirtualDom$Styled$getUnusedKey, '_', keyedChildNodes);
+		var finalNode = A2($rtfeldman$elm_css$VirtualDom$Styled$toStyleNode, maybeNonce, accumulatedStyles);
+		return _Utils_Tuple2(styleNodeKey, finalNode);
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$unstyleKeyed = F4(
+	function (maybeNonce, elemType, properties, keyedChildren) {
+		var initialStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, $elm$core$Dict$empty, properties);
+		var _v0 = A3(
+			$elm$core$List$foldl,
+			$rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml,
+			_Utils_Tuple2(_List_Nil, initialStyles),
+			keyedChildren);
+		var keyedChildNodes = _v0.a;
+		var styles = _v0.b;
+		var keyedStyleNode = A3(
+			$rtfeldman$elm_css$VirtualDom$Styled$toKeyedStyleNode,
+			maybeNonce,
+			$rtfeldman$elm_css$VirtualDom$Styled$UnscopedStyles(styles),
+			keyedChildNodes);
+		var unstyledProperties = A2(
+			$elm$core$List$map,
+			$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute(styles),
+			properties);
+		return A3(
+			$elm$virtual_dom$VirtualDom$keyedNode,
+			elemType,
+			unstyledProperties,
+			A2(
+				$elm$core$List$cons,
+				keyedStyleNode,
+				$elm$core$List$reverse(keyedChildNodes)));
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$unstyleKeyedNS = F5(
+	function (maybeNonce, ns, elemType, properties, keyedChildren) {
+		var initialStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, $elm$core$Dict$empty, properties);
+		var _v0 = A3(
+			$elm$core$List$foldl,
+			$rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml,
+			_Utils_Tuple2(_List_Nil, initialStyles),
+			keyedChildren);
+		var keyedChildNodes = _v0.a;
+		var styles = _v0.b;
+		var keyedStyleNode = A3(
+			$rtfeldman$elm_css$VirtualDom$Styled$toKeyedStyleNode,
+			maybeNonce,
+			$rtfeldman$elm_css$VirtualDom$Styled$UnscopedStyles(styles),
+			keyedChildNodes);
+		var unstyledProperties = A2(
+			$elm$core$List$map,
+			$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttributeNS(styles),
+			properties);
+		return A4(
+			$elm$virtual_dom$VirtualDom$keyedNodeNS,
+			ns,
+			elemType,
+			unstyledProperties,
+			A2(
+				$elm$core$List$cons,
+				keyedStyleNode,
+				$elm$core$List$reverse(keyedChildNodes)));
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$unstyleNS = F5(
+	function (maybeNonce, ns, elemType, properties, children) {
+		var initialStyles = A3($elm$core$List$foldl, $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles, $elm$core$Dict$empty, properties);
+		var _v0 = A3(
+			$elm$core$List$foldl,
+			$rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml,
+			_Utils_Tuple2(_List_Nil, initialStyles),
+			children);
+		var childNodes = _v0.a;
+		var styles = _v0.b;
+		var styleNode = A2(
+			$rtfeldman$elm_css$VirtualDom$Styled$toStyleNode,
+			maybeNonce,
+			$rtfeldman$elm_css$VirtualDom$Styled$UnscopedStyles(styles));
+		var unstyledProperties = A2(
+			$elm$core$List$map,
+			$rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttributeNS(styles),
+			properties);
+		return A4(
+			$elm$virtual_dom$VirtualDom$nodeNS,
+			ns,
+			elemType,
+			unstyledProperties,
+			A2(
+				$elm$core$List$cons,
+				styleNode,
+				$elm$core$List$reverse(childNodes)));
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled = function (vdom) {
+	switch (vdom.$) {
+		case 4:
+			var plainNode = vdom.a;
+			return plainNode;
+		case 0:
+			var elemType = vdom.a;
+			var properties = vdom.b;
+			var children = vdom.c;
+			return A4($rtfeldman$elm_css$VirtualDom$Styled$unstyle, $elm$core$Maybe$Nothing, elemType, properties, children);
+		case 1:
+			var ns = vdom.a;
+			var elemType = vdom.b;
+			var properties = vdom.c;
+			var children = vdom.d;
+			return A5($rtfeldman$elm_css$VirtualDom$Styled$unstyleNS, $elm$core$Maybe$Nothing, ns, elemType, properties, children);
+		case 2:
+			var elemType = vdom.a;
+			var properties = vdom.b;
+			var children = vdom.c;
+			return A4($rtfeldman$elm_css$VirtualDom$Styled$unstyleKeyed, $elm$core$Maybe$Nothing, elemType, properties, children);
+		default:
+			var ns = vdom.a;
+			var elemType = vdom.b;
+			var properties = vdom.c;
+			var children = vdom.d;
+			return A5($rtfeldman$elm_css$VirtualDom$Styled$unstyleKeyedNS, $elm$core$Maybe$Nothing, ns, elemType, properties, children);
+	}
+};
+var $rtfeldman$elm_css$Html$Styled$toUnstyled = $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled;
 var $rtfeldman$elm_css$Html$Styled$a = $rtfeldman$elm_css$Html$Styled$node('a');
 var $rtfeldman$elm_css$Html$Styled$b = $rtfeldman$elm_css$Html$Styled$node('b');
 var $rtfeldman$elm_css$Html$Styled$Attributes$href = function (url) {
@@ -8986,7 +8990,7 @@ var $author$project$Main$viewBranches = function (blist) {
 			]));
 };
 var $author$project$Main$viewResult = function (data) {
-	var _v0 = data.aE;
+	var _v0 = data.ao;
 	if (_v0 === '') {
 		return $rtfeldman$elm_css$Html$Styled$text('');
 	} else {
@@ -9027,7 +9031,7 @@ var $author$project$Main$viewResult = function (data) {
 										]),
 									_List_fromArray(
 										[
-											$rtfeldman$elm_css$Html$Styled$text(data.aE)
+											$rtfeldman$elm_css$Html$Styled$text(data.ao)
 										]))
 								]))
 						])),
@@ -9073,68 +9077,75 @@ var $author$project$Main$viewValidation = function (model) {
 	}
 };
 var $author$project$Main$view = function (model) {
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$div,
-		_List_fromArray(
+	return {
+		cb: _List_fromArray(
 			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$padding(
-						$rtfeldman$elm_css$Css$px(30))
-					]))
-			]),
-		_List_fromArray(
-			[
+				$rtfeldman$elm_css$Html$Styled$toUnstyled(
 				A2(
-				$rtfeldman$elm_css$Html$Styled$div,
-				_List_Nil,
-				_List_fromArray(
-					[
-						A2(
-						$rtfeldman$elm_css$Html$Styled$div,
-						_List_Nil,
-						_List_fromArray(
-							[
-								A2(
-								$rtfeldman$elm_css$Html$Styled$input,
-								_List_fromArray(
-									[
-										$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('search...'),
-										$rtfeldman$elm_css$Html$Styled$Events$onInput($author$project$Main$SetPR)
-									]),
-								_List_Nil),
-								A2(
-								$rtfeldman$elm_css$Html$Styled$button,
-								_List_fromArray(
-									[
-										$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$RunSearch),
-										$rtfeldman$elm_css$Html$Styled$Attributes$disabled(
-										$author$project$Main$viewValidation(model))
-									]),
-								_List_fromArray(
-									[
-										$rtfeldman$elm_css$Html$Styled$text('Search')
-									]))
-							])),
-						A2(
-						$rtfeldman$elm_css$Html$Styled$div,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$author$project$Main$viewResult(model)
-							]))
-					]))
-			]));
+					$rtfeldman$elm_css$Html$Styled$div,
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Html$Styled$Attributes$css(
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Css$padding(
+									$rtfeldman$elm_css$Css$px(30))
+								]))
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$rtfeldman$elm_css$Html$Styled$div,
+							_List_Nil,
+							_List_fromArray(
+								[
+									A2(
+									$rtfeldman$elm_css$Html$Styled$div,
+									_List_Nil,
+									_List_fromArray(
+										[
+											A2(
+											$rtfeldman$elm_css$Html$Styled$input,
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('search...'),
+													$rtfeldman$elm_css$Html$Styled$Events$onInput($author$project$Main$SetPR)
+												]),
+											_List_Nil),
+											A2(
+											$rtfeldman$elm_css$Html$Styled$button,
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$RunSearch),
+													$rtfeldman$elm_css$Html$Styled$Attributes$disabled(
+													$author$project$Main$viewValidation(model))
+												]),
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Html$Styled$text('Search')
+												]))
+										])),
+									A2(
+									$rtfeldman$elm_css$Html$Styled$div,
+									_List_Nil,
+									_List_fromArray(
+										[
+											$author$project$Main$viewResult(model)
+										]))
+								]))
+						])))
+			]),
+		ao: 'pr-status'
+	};
 };
-var $author$project$Main$main = $elm$browser$Browser$element(
+var $author$project$Main$main = $elm$browser$Browser$document(
 	{
 		cm: $author$project$Main$init,
 		cC: function (_v0) {
 			return $elm$core$Platform$Sub$none;
 		},
 		cE: $author$project$Main$update,
-		cH: A2($elm$core$Basics$composeR, $author$project$Main$view, $rtfeldman$elm_css$Html$Styled$toUnstyled)
+		cH: $author$project$Main$view
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
