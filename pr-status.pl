@@ -11,6 +11,7 @@ use Data::Dumper;
 use Git;
 use JSON qw( from_json );
 use Mojolicious::Lite -signatures;
+use Mojo::IOLoop;
 use Time::HiRes qw( time );
 
 my $VERSION = 'v0.0.1';
@@ -24,7 +25,25 @@ Git::command_noisy( 'clone', 'https://github.com/nixos/nixpkgs', $repo_dir )
   if !-e $repo_dir;
 my $repo = Git->repository( Directory => $repo_dir );
 
-my $lock = 0;
+my $lock       = 0;
+my $refresh    = 1 * 60 * 60;
+my $gc_refresh = 24 * 60 * 60;
+
+Mojo::IOLoop->recurring(
+    $refresh => sub ($loop) {
+        $lock = 1;
+        $repo->command('fetch');
+        $lock = 0;
+    }
+);
+
+Mojo::IOLoop->recurring(
+    $gc_refresh => sub ($loop) {
+        $lock = 1;
+        $repo->command('gc');
+        $lock = 0;
+    }
+);
 
 sub get_commit {
     my $pr = shift;
