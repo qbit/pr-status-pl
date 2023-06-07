@@ -47,8 +47,8 @@ Mojo::IOLoop->recurring(
 
 sub get_commit {
     my $pr = shift;
-    $repo->command( 'fetch', 'origin', "pull/${pr}/head:pr-status-${pr}" );
-    $repo->command( 'checkout', "pr-status-$pr" );
+    $repo->command( 'fetch', '-f', 'origin', "pull/${pr}/head:pr-status-${pr}" );
+    $repo->command( 'checkout', '-f', "pr-status-$pr" );
     my $commit = $repo->command( 'rev-parse', 'HEAD' );
     my $log    = $repo->command( 'log', '-n', '1', '--pretty=format:%s' );
     $repo->command( 'checkout', 'master' );
