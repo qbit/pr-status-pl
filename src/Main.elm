@@ -1,9 +1,10 @@
-module Main exposing (..)
+module Main exposing (Branches, Model, Status, main, resultDecoder, statusDecoder)
 
 import Browser exposing (Document)
-import Css exposing (padding, px)
+import Css exposing (..)
+import Css.Animations exposing (keyframes, property)
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (css, disabled, href, placeholder, style)
+import Html.Styled.Attributes exposing (css, disabled, hidden, href, placeholder, style)
 import Html.Styled.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as Decode exposing (Decoder, field, int, list, map5, string)
@@ -31,6 +32,7 @@ type alias Model =
     , title : String
     , branches : Branches
     , error : String
+    , loading : Bool
     }
 
 
@@ -48,7 +50,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         RunSearch ->
-            ( model, getResult model )
+            ( { model | loading = True }, getResult model )
 
         GotResult (Err _) ->
             ( { model | error = "Can't load data!" }, Cmd.none )
@@ -78,12 +80,33 @@ initialModel =
     , title = ""
     , branches = []
     , error = ""
+    , loading = False
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( initialModel, Cmd.none )
+
+
+loading : Html msg
+loading =
+    span
+        [ css
+            [ animationName (keyframes [ ( 5, [ Css.Animations.property "rotate" "360deg" ] ) ])
+            , animationDuration (sec 0.75)
+            , animationIterationCount infinite
+            , boxSizing borderBox
+            , borderRadius (pct 50)
+            , border3 (px 2) solid (rgb 160 160 160)
+            , borderTopColor (rgb 0 0 0)
+            , width (px 20)
+            , height (px 20)
+            , marginLeft (px 10)
+            , position absolute
+            ]
+        ]
+        [ text "" ]
 
 
 view : Model -> Document Msg
@@ -100,9 +123,13 @@ view model =
                         [ input [ placeholder "search...", onInput SetPR ] []
                         , button
                             [ onClick RunSearch
-                            , disabled (viewValidation model)
+                            , Html.Styled.Attributes.disabled (viewValidation model)
                             ]
                             [ text "Search" ]
+                        , span
+                            [ Html.Styled.Attributes.hidden (not model.loading)
+                            ]
+                            [ loading ]
                         ]
                     , div []
                         [ viewResult model
@@ -136,7 +163,7 @@ viewResult data =
                 prStr =
                     String.fromInt data.pull_request
             in
-            table
+            Html.Styled.table
                 []
                 [ tr []
                     [ td [] [ b [] [ text "Title:" ] ]
@@ -207,9 +234,10 @@ resultDecoder =
             , title = title
             , branches = branches
             , error = ""
+            , loading = False
             }
         )
-        (field "pull_request" int)
+        (field "pull_request" Decode.int)
         (field "release" string)
         (field "status" statusDecoder)
         (field "title" string)
