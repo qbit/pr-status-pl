@@ -12,6 +12,7 @@ use Git;
 use JSON qw( from_json );
 use Mojolicious::Lite -signatures;
 use Mojo::IOLoop;
+use Mojo::Exception qw(check raise);
 use Time::HiRes qw( time );
 
 my $VERSION = 'v0.0.1';
@@ -47,7 +48,8 @@ Mojo::IOLoop->recurring(
 
 sub get_commit {
     my $pr = shift;
-    $repo->command( 'fetch', '-f', 'origin', "pull/${pr}/head:pr-status-${pr}" );
+    $repo->command( 'fetch', '-f', 'origin',
+        "pull/${pr}/head:pr-status-${pr}" );
     $repo->command( 'checkout', '-f', "pr-status-$pr" );
     my $commit = $repo->command( 'rev-parse', 'HEAD' );
     my $log    = $repo->command( 'log', '-n', '1', '--pretty=format:%s' );
@@ -169,7 +171,12 @@ get '/:pr' => sub ($c) {
 
     return unless $pr =~ m/^\d+$/;
 
-    my ( $title, $commit ) = get_commit($pr);
+    my $title  = "";
+    my $commit = "";
+    my $error  = "";
+    eval { ( $title, $commit ) = get_commit($pr); };
+    check $@ => [ qr/command returned error/ =>
+          sub { say "Git command failed: $_"; $error = $_; } ];
 
     my $start = time;
     my $list  = check_nixpkg_branches $commit;
@@ -184,7 +191,8 @@ get '/:pr' => sub ($c) {
         status       => $status->{state},
         release      => $release,
         status_info  => $status->{info},
-        queryTime    => sprintf( "%2f", $end - $start ) + 0.0
+        queryTime    => sprintf( "%2f", $end - $start ) + 0.0,
+        error        => $error
     };
 
     $c->render( json => $result );
@@ -994,11 +1002,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.bb.az === region.bt.az)
+	if (region.bb.aA === region.bt.aA)
 	{
-		return 'on line ' + region.bb.az;
+		return 'on line ' + region.bb.aA;
 	}
-	return 'on lines ' + region.bb.az + ' through ' + region.bt.az;
+	return 'on lines ' + region.bb.aA + ' through ' + region.bt.aA;
 }
 
 
@@ -4207,7 +4215,7 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.ao) && (_VirtualDom_doc.title = title = doc.ao);
+				(title !== doc.ap) && (_VirtualDom_doc.title = title = doc.ap);
 			});
 		}
 	);
@@ -5576,7 +5584,7 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$document = _Browser_document;
 var $author$project$Main$Open = 1;
-var $author$project$Main$initialModel = {aM: _List_Nil, aa: '', aA: false, P: 0, aU: '', aY: 1, ao: ''};
+var $author$project$Main$initialModel = {aM: _List_Nil, aa: '', ai: false, P: 0, aU: '', aY: 1, ap: ''};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (_v0) {
@@ -6377,7 +6385,7 @@ var $elm$http$Http$get = function (r) {
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$json$Json$Decode$list = _Json_decodeList;
-var $elm$json$Json$Decode$map5 = _Json_map5;
+var $elm$json$Json$Decode$map6 = _Json_map6;
 var $author$project$Main$Complete = 0;
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$fail = _Json_fail;
@@ -6395,11 +6403,11 @@ var $author$project$Main$statusDecoder = A2(
 		}
 	},
 	$elm$json$Json$Decode$string);
-var $author$project$Main$resultDecoder = A6(
-	$elm$json$Json$Decode$map5,
-	F5(
-		function (pull_request, release, status, title, branches) {
-			return {aM: branches, aa: '', aA: false, P: pull_request, aU: release, aY: status, ao: title};
+var $author$project$Main$resultDecoder = A7(
+	$elm$json$Json$Decode$map6,
+	F6(
+		function (pull_request, release, status, title, branches, error) {
+			return {aM: branches, aa: error, ai: false, P: pull_request, aU: release, aY: status, ap: title};
 		}),
 	A2($elm$json$Json$Decode$field, 'pull_request', $elm$json$Json$Decode$int),
 	A2($elm$json$Json$Decode$field, 'release', $elm$json$Json$Decode$string),
@@ -6408,13 +6416,31 @@ var $author$project$Main$resultDecoder = A6(
 	A2(
 		$elm$json$Json$Decode$field,
 		'branches',
-		$elm$json$Json$Decode$list($elm$json$Json$Decode$string)));
+		$elm$json$Json$Decode$list($elm$json$Json$Decode$string)),
+	A2($elm$json$Json$Decode$field, 'error', $elm$json$Json$Decode$string));
 var $author$project$Main$getResult = function (model) {
 	return $elm$http$Http$get(
 		{
 			ci: A2($elm$http$Http$expectJson, $author$project$Main$GotResult, $author$project$Main$resultDecoder),
 			cH: '/' + $elm$core$String$fromInt(model.P)
 		});
+};
+var $author$project$Main$httpErr = function (error) {
+	switch (error.$) {
+		case 0:
+			var url = error.a;
+			return 'Bad url: ' + url;
+		case 1:
+			return 'Timed out..';
+		case 2:
+			return 'Network error.. are you connected?';
+		case 3:
+			var status = error.a;
+			return 'Bad status: ' + $elm$core$String$fromInt(status);
+		default:
+			var body = error.a;
+			return 'Bad body: \'' + (body + '\'');
+	}
 };
 var $author$project$Main$update = F2(
 	function (msg, model) {
@@ -6423,14 +6449,18 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{aA: true}),
+						{ai: true}),
 					$author$project$Main$getResult(model));
 			case 1:
 				if (msg.a.$ === 1) {
+					var err = msg.a.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{aa: 'Can\'t load data!'}),
+							{
+								aa: 'Error: ' + $author$project$Main$httpErr(err),
+								ai: false
+							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
 					var pr = msg.a.a;
@@ -7287,7 +7317,7 @@ var $rtfeldman$elm_css$Css$Structure$concatMapLastStyleBlock = F2(
 var $elm$core$String$cons = _String_cons;
 var $robinheghan$murmur3$Murmur3$HashData = F4(
 	function (shift, seed, hash, charsProcessed) {
-		return {Y: charsProcessed, ad: hash, R: seed, aj: shift};
+		return {Y: charsProcessed, ad: hash, R: seed, ak: shift};
 	});
 var $robinheghan$murmur3$Murmur3$c1 = 3432918353;
 var $robinheghan$murmur3$Murmur3$c2 = 461845907;
@@ -7337,17 +7367,17 @@ var $robinheghan$murmur3$Murmur3$mix = F2(
 	});
 var $robinheghan$murmur3$Murmur3$hashFold = F2(
 	function (c, data) {
-		var res = data.ad | ((255 & $elm$core$Char$toCode(c)) << data.aj);
-		var _v0 = data.aj;
+		var res = data.ad | ((255 & $elm$core$Char$toCode(c)) << data.ak);
+		var _v0 = data.ak;
 		if (_v0 === 24) {
 			return {
 				Y: data.Y + 1,
 				ad: 0,
 				R: A2($robinheghan$murmur3$Murmur3$mix, data.R, res),
-				aj: 0
+				ak: 0
 			};
 		} else {
-			return {Y: data.Y + 1, ad: res, R: data.R, aj: data.aj + 8};
+			return {Y: data.Y + 1, ad: res, R: data.R, ak: data.ak + 8};
 		}
 	});
 var $robinheghan$murmur3$Murmur3$hashString = F2(
@@ -8259,7 +8289,7 @@ var $rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
 			bo: 0,
 			ab: 0,
 			l: 0,
-			ay: 0,
+			az: 0,
 			ae: 0,
 			E: 0,
 			af: 0,
@@ -8269,8 +8299,8 @@ var $rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
 			x: 0,
 			ah: 0,
 			G: numericValue,
-			am: 0,
-			ap: unitLabel,
+			an: 0,
+			aq: unitLabel,
 			aI: units,
 			z: _Utils_ap(
 				$elm$core$String$fromFloat(numericValue),
@@ -8293,10 +8323,10 @@ var $rtfeldman$elm_css$Css$cssFunction = F2(
 var $rtfeldman$elm_css$Css$rgb = F3(
 	function (r, g, b) {
 		return {
-			as: 1,
-			au: b,
+			at: 1,
+			av: b,
 			w: 0,
-			ax: g,
+			ay: g,
 			aD: r,
 			z: A2(
 				$rtfeldman$elm_css$Css$cssFunction,
@@ -8436,6 +8466,16 @@ var $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $rtfeldman$elm_css$Html$Styled$Attributes$placeholder = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('placeholder');
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $rtfeldman$elm_css$VirtualDom$Styled$style = F2(
+	function (key, val) {
+		return A3(
+			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
+			A2($elm$virtual_dom$VirtualDom$style, key, val),
+			false,
+			'');
+	});
+var $rtfeldman$elm_css$Html$Styled$Attributes$style = $rtfeldman$elm_css$VirtualDom$Styled$style;
 var $rtfeldman$elm_css$VirtualDom$Styled$UnscopedStyles = function (a) {
 	return {$: 0, a: a};
 };
@@ -9073,16 +9113,6 @@ var $author$project$Main$makeRow = F2(
 						]))
 				]));
 	});
-var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var $rtfeldman$elm_css$VirtualDom$Styled$style = F2(
-	function (key, val) {
-		return A3(
-			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
-			A2($elm$virtual_dom$VirtualDom$style, key, val),
-			false,
-			'');
-	});
-var $rtfeldman$elm_css$Html$Styled$Attributes$style = $rtfeldman$elm_css$VirtualDom$Styled$style;
 var $rtfeldman$elm_css$Html$Styled$table = $rtfeldman$elm_css$Html$Styled$node('table');
 var $rtfeldman$elm_css$Html$Styled$ul = $rtfeldman$elm_css$Html$Styled$node('ul');
 var $rtfeldman$elm_css$Html$Styled$li = $rtfeldman$elm_css$Html$Styled$node('li');
@@ -9127,7 +9157,7 @@ var $author$project$Main$viewBranches = function (blist) {
 			]));
 };
 var $author$project$Main$viewResult = function (data) {
-	var _v0 = data.ao;
+	var _v0 = data.ap;
 	if (_v0 === '') {
 		return $rtfeldman$elm_css$Html$Styled$text('');
 	} else {
@@ -9168,7 +9198,7 @@ var $author$project$Main$viewResult = function (data) {
 										]),
 									_List_fromArray(
 										[
-											$rtfeldman$elm_css$Html$Styled$text(data.ao)
+											$rtfeldman$elm_css$Html$Styled$text(data.ap)
 										]))
 								]))
 						])),
@@ -9184,24 +9214,7 @@ var $author$project$Main$viewResult = function (data) {
 							return 'open';
 						}
 					}()),
-					$author$project$Main$viewBranches(data.aM),
-					function () {
-					var _v2 = data.aa;
-					if (_v2 === '') {
-						return $rtfeldman$elm_css$Html$Styled$text('');
-					} else {
-						return A2(
-							$rtfeldman$elm_css$Html$Styled$span,
-							_List_fromArray(
-								[
-									A2($rtfeldman$elm_css$Html$Styled$Attributes$style, 'color', 'red')
-								]),
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Html$Styled$text(data.aa)
-								]));
-					}
-				}()
+					$author$project$Main$viewBranches(data.aM)
 				]));
 	}
 };
@@ -9265,7 +9278,7 @@ var $author$project$Main$view = function (model) {
 											$rtfeldman$elm_css$Html$Styled$span,
 											_List_fromArray(
 												[
-													$rtfeldman$elm_css$Html$Styled$Attributes$hidden(!model.aA)
+													$rtfeldman$elm_css$Html$Styled$Attributes$hidden(!model.ai)
 												]),
 											_List_fromArray(
 												[$author$project$Main$loading]))
@@ -9277,10 +9290,27 @@ var $author$project$Main$view = function (model) {
 										[
 											$author$project$Main$viewResult(model)
 										]))
-								]))
+								])),
+							function () {
+							var _v0 = model.aa;
+							if (_v0 === '') {
+								return $rtfeldman$elm_css$Html$Styled$text('');
+							} else {
+								return A2(
+									$rtfeldman$elm_css$Html$Styled$span,
+									_List_fromArray(
+										[
+											A2($rtfeldman$elm_css$Html$Styled$Attributes$style, 'color', 'red')
+										]),
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Html$Styled$text(model.aa)
+										]));
+							}
+						}()
 						])))
 			]),
-		ao: 'pr-status'
+		ap: 'pr-status'
 	};
 };
 var $author$project$Main$main = $elm$browser$Browser$document(

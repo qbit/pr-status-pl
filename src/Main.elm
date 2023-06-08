@@ -2,12 +2,12 @@ module Main exposing (Branches, Model, Status, main, resultDecoder, statusDecode
 
 import Browser exposing (Document)
 import Css exposing (..)
-import Css.Animations exposing (keyframes, property)
+import Css.Animations exposing (keyframes)
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (css, disabled, hidden, href, placeholder, style)
+import Html.Styled.Attributes exposing (css, href, placeholder, style)
 import Html.Styled.Events exposing (onClick, onInput)
-import Http
-import Json.Decode as Decode exposing (Decoder, field, int, list, map5, string)
+import Http exposing (..)
+import Json.Decode as Decode exposing (Decoder, field, list, map6, string)
 
 
 type Status
@@ -46,14 +46,33 @@ main =
         }
 
 
+httpErr : Http.Error -> String
+httpErr error =
+    case error of
+        BadUrl url ->
+            "Bad url: " ++ url
+
+        Timeout ->
+            "Timed out.."
+
+        NetworkError ->
+            "Network error.. are you connected?"
+
+        BadStatus status ->
+            "Bad status: " ++ String.fromInt status
+
+        BadBody body ->
+            "Bad body: '" ++ body ++ "'"
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         RunSearch ->
             ( { model | loading = True }, getResult model )
 
-        GotResult (Err _) ->
-            ( { model | error = "Can't load data!" }, Cmd.none )
+        GotResult (Err err) ->
+            ( { model | error = "Error: " ++ httpErr err, loading = False }, Cmd.none )
 
         GotResult (Ok pr) ->
             ( pr, Cmd.none )
@@ -135,6 +154,12 @@ view model =
                         [ viewResult model
                         ]
                     ]
+                , case model.error of
+                    "" ->
+                        text ""
+
+                    _ ->
+                        span [ style "color" "red" ] [ text model.error ]
                 ]
             )
         ]
@@ -183,12 +208,6 @@ viewResult data =
                             "open"
                     )
                 , viewBranches data.branches
-                , case data.error of
-                    "" ->
-                        text ""
-
-                    _ ->
-                        span [ style "color" "red" ] [ text data.error ]
                 ]
 
 
@@ -226,14 +245,14 @@ getResult model =
 
 resultDecoder : Decoder Model
 resultDecoder =
-    map5
-        (\pull_request release status title branches ->
+    map6
+        (\pull_request release status title branches error ->
             { pull_request = pull_request
             , release = release
             , status = status
             , title = title
             , branches = branches
-            , error = ""
+            , error = error
             , loading = False
             }
         )
@@ -242,6 +261,7 @@ resultDecoder =
         (field "status" statusDecoder)
         (field "title" string)
         (field "branches" (list string))
+        (field "error" string)
 
 
 statusDecoder : Decoder Status

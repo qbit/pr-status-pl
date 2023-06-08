@@ -14,4 +14,5 @@ append:
 
 clean:
 	rm -f index.html
+	rm -f *.bak
 
