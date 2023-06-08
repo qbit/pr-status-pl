@@ -125,8 +125,9 @@ sub figure_status {
         $trueCount += 1 if $status->{info}->{$s} == JSON::true;
     }
 
-    $status->{state} = "complete" if $dataLen == $trueCount;
-    $status->{state} = "open"     if @{$list} == 0;
+    $status->{state} = "complete"
+      if ( $dataLen == $trueCount && @{$list} >= @stable );
+    $status->{state} = "open" if @{$list} == 0;
 
     return ( $release, $status );
 }
