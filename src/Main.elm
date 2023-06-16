@@ -7,7 +7,7 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css, href, placeholder, style)
 import Html.Styled.Events exposing (onClick, onInput)
 import Http exposing (..)
-import Json.Decode as Decode exposing (Decoder, field, list, map6, string)
+import Json.Decode as Decode exposing (Decoder, field, list, map2, map6, string)
 
 
 type Status
@@ -15,14 +15,30 @@ type Status
     | Open
 
 
+type WorkAction
+    = NoOp
+    | GC
+    | Update
+
+
 type Msg
     = RunSearch
     | GotResult (Result Http.Error Model)
+    | GCResult (Result Http.Error WorkStatus)
+    | UpdateResult (Result Http.Error WorkStatus)
     | SetPR String
+    | UpdateBackend
+    | CollectGarbage
 
 
 type alias Branches =
     List String
+
+
+type alias WorkStatus =
+    { action : WorkAction
+    , updateTime : Float
+    }
 
 
 type alias Model =
@@ -33,6 +49,8 @@ type alias Model =
     , branches : Branches
     , error : String
     , loading : Bool
+    , updateStatus : WorkStatus
+    , gcStatus : WorkStatus
     }
 
 
@@ -65,17 +83,34 @@ httpErr error =
             "Bad body: '" ++ body ++ "'"
 
 
+loadingModel : Model
+loadingModel =
+    { initialModel | loading = True }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         RunSearch ->
-            ( { model | loading = True }, getResult model )
+            ( loadingModel, getResult model )
 
         GotResult (Err err) ->
             ( { model | error = "Error: " ++ httpErr err, loading = False }, Cmd.none )
 
         GotResult (Ok pr) ->
             ( pr, Cmd.none )
+
+        GCResult (Err err) ->
+            ( { model | error = "Error: " ++ httpErr err, loading = False }, Cmd.none )
+
+        GCResult (Ok resp) ->
+            ( { model | gcStatus = resp, loading = False }, Cmd.none )
+
+        UpdateResult (Err err) ->
+            ( { model | error = "Error: " ++ httpErr err, loading = False }, Cmd.none )
+
+        UpdateResult (Ok resp) ->
+            ( { model | updateStatus = resp, loading = False }, Cmd.none )
 
         SetPR pr ->
             ( { model
@@ -90,6 +125,12 @@ update msg model =
             , Cmd.none
             )
 
+        CollectGarbage ->
+            ( loadingModel, getGC )
+
+        UpdateBackend ->
+            ( loadingModel, getUpdate )
+
 
 initialModel : Model
 initialModel =
@@ -100,6 +141,14 @@ initialModel =
     , branches = []
     , error = ""
     , loading = False
+    , updateStatus =
+        { action = NoOp
+        , updateTime = 0.0
+        }
+    , gcStatus =
+        { action = NoOp
+        , updateTime = 0.0
+        }
     }
 
 
@@ -160,11 +209,43 @@ view model =
 
                     _ ->
                         span [ style "color" "red" ] [ text model.error ]
+                , hr [] []
+                , div []
+                    [ button
+                        [ onClick UpdateBackend
+                        , Html.Styled.Attributes.disabled model.loading
+                        ]
+                        [ text "Update Backend" ]
+                    , button
+                        [ onClick CollectGarbage
+                        , Html.Styled.Attributes.disabled model.loading
+                        ]
+                        [ text "Collect Garbage" ]
+                    , p []
+                        [ i []
+                            [ viewWorkAction model.gcStatus
+                            , viewWorkAction model.updateStatus
+                            ]
+                        ]
+                    ]
                 ]
             )
         ]
     , title = "pr-status"
     }
+
+
+viewWorkAction : WorkStatus -> Html Msg
+viewWorkAction work =
+    case work.action of
+        NoOp ->
+            text ""
+
+        GC ->
+            text ("Garbage collection took: " ++ String.fromFloat work.updateTime ++ " seconds.")
+
+        Update ->
+            text ("Update took: " ++ String.fromFloat work.updateTime ++ " seconds.")
 
 
 viewValidation : Model -> Bool
@@ -243,6 +324,49 @@ getResult model =
         }
 
 
+getGC : Cmd Msg
+getGC =
+    Http.get
+        { url = "/gc"
+        , expect = Http.expectJson GCResult workStatusDecoder
+        }
+
+
+getUpdate : Cmd Msg
+getUpdate =
+    Http.get
+        { url = "/update"
+        , expect = Http.expectJson UpdateResult workStatusDecoder
+        }
+
+
+actionDecoder : Decoder WorkAction
+actionDecoder =
+    Decode.string
+        |> Decode.andThen
+            (\str ->
+                case str of
+                    "gc" ->
+                        Decode.succeed GC
+
+                    "update" ->
+                        Decode.succeed Update
+
+                    "" ->
+                        Decode.succeed NoOp
+
+                    _ ->
+                        Decode.fail "invalid action"
+            )
+
+
+workStatusDecoder : Decoder WorkStatus
+workStatusDecoder =
+    map2 WorkStatus
+        (field "action" actionDecoder)
+        (field "updateTime" Decode.float)
+
+
 resultDecoder : Decoder Model
 resultDecoder =
     map6
@@ -254,6 +378,8 @@ resultDecoder =
             , branches = branches
             , error = error
             , loading = False
+            , updateStatus = initialModel.updateStatus
+            , gcStatus = initialModel.gcStatus
             }
         )
         (field "pull_request" Decode.int)
