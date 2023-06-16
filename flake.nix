@@ -20,7 +20,7 @@
         in {
           pr-status = pkgs.perlPackages.buildPerlPackage {
             pname = "pr-status";
-            version = "v0.0.3";
+            version = "v0.0.4";
             src = ./.;
             buildInputs = with pkgs; [ makeWrapper ];
             propagatedBuildInputs = with pkgs.perlPackages; [
