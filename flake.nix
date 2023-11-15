@@ -47,6 +47,7 @@
           elmPackages.elm
           elmPackages.elm-test
           elmPackages.elm-live
+          elmPackages.elm-json
         ];
         in {
           default = pkgs.mkShell {
