@@ -2,7 +2,7 @@
   description =
     "pr-status: a tool to query NixOS/nixpkgs pull request status as they move along the build chain";
 
-  inputs.nixpkgs.url = "nixpkgs/nixos-22.11";
+  inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
 
   outputs = { self, nixpkgs }:
     let
