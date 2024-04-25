@@ -4,7 +4,7 @@ import Browser exposing (Document)
 import Css exposing (..)
 import Css.Animations exposing (keyframes)
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (css, href, placeholder, style)
+import Html.Styled.Attributes exposing (class, css, href, placeholder, style)
 import Html.Styled.Events exposing (onClick, onInput)
 import Http exposing (..)
 import Json.Decode as Decode exposing (Decoder, field, list, map2, map7, string)
@@ -23,6 +23,7 @@ type WorkAction
 
 type Msg
     = RunSearch
+    | SearchPR Int
     | GotResult (Result Http.Error Model)
     | GCResult (Result Http.Error WorkStatus)
     | GotSearches (Result Http.Error Searches)
@@ -104,7 +105,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         RunSearch ->
-            ( loadingModel, getResult model )
+            ( loadingModel, getResult model.pull_request )
 
         GotResult (Err err) ->
             ( { model | error = "Error: " ++ httpErr err, loading = False }, Cmd.none )
@@ -142,6 +143,9 @@ update msg model =
               }
             , Cmd.none
             )
+
+        SearchPR pr ->
+            ( loadingModel, getResult pr )
 
         CollectGarbage ->
             ( loadingModel, getGC )
@@ -265,12 +269,12 @@ viewSearch search =
             String.fromInt search.pull_request
     in
     ol []
-        [ text prStr
+        [ span [ style "cursor" "pointer", onClick (SearchPR search.pull_request) ] [ text "⟳" ]
+        , text prStr
         , text (": " ++ search.title)
         , ul []
             [ li [] [ a [ href ("https://github.com/NixOS/nixpkgs/pull/" ++ prStr) ] [ text "nixpkgs" ] ]
             , li [] [ a [ href ("/" ++ prStr) ] [ text "json" ] ]
-            , li [] [ a [ onClick (SetPR prStr) ] [ text "Refresh" ] ]
             ]
         ]
 
@@ -365,10 +369,10 @@ makeRow title data =
         ]
 
 
-getResult : Model -> Cmd Msg
-getResult model =
+getResult : Int -> Cmd Msg
+getResult pr =
     Http.get
-        { url = "/" ++ String.fromInt model.pull_request
+        { url = "/" ++ String.fromInt pr
         , expect = Http.expectJson GotResult resultDecoder
         }
 

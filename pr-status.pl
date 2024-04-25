@@ -5618,7 +5618,7 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$document = _Browser_document;
 var $author$project$Main$GotSearches = function (a) {
-	return {$: 3, a: a};
+	return {$: 4, a: a};
 };
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$http$Http$BadStatus_ = F2(
@@ -6410,7 +6410,7 @@ var $elm$http$Http$get = function (r) {
 var $elm$json$Json$Decode$list = _Json_decodeList;
 var $author$project$Main$Search = F2(
 	function (pull_request, title) {
-		return {B: pull_request, L: title};
+		return {w: pull_request, L: title};
 	});
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
@@ -6430,10 +6430,10 @@ var $author$project$Main$NoOp = 0;
 var $author$project$Main$Open = 1;
 var $author$project$Main$initialModel = {
 	aR: _List_Nil,
-	y: '',
+	z: '',
 	af: {aO: 0, aM: 0.0},
 	m: false,
-	B: 0,
+	w: 0,
 	a_: '',
 	aG: _List_Nil,
 	a2: 1,
@@ -6446,7 +6446,7 @@ var $author$project$Main$init = function (_v0) {
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Main$GCResult = function (a) {
-	return {$: 2, a: a};
+	return {$: 3, a: a};
 };
 var $author$project$Main$WorkStatus = F2(
 	function (action, updateTime) {
@@ -6483,7 +6483,7 @@ var $author$project$Main$getGC = $elm$http$Http$get(
 		a5: '/gc'
 	});
 var $author$project$Main$GotResult = function (a) {
-	return {$: 1, a: a};
+	return {$: 2, a: a};
 };
 var $elm$json$Json$Decode$map7 = _Json_map7;
 var $author$project$Main$Complete = 0;
@@ -6504,7 +6504,7 @@ var $author$project$Main$resultDecoder = A8(
 	$elm$json$Json$Decode$map7,
 	F7(
 		function (pull_request, release, status, title, branches, searches, error) {
-			return {aR: branches, y: error, af: $author$project$Main$initialModel.af, m: false, B: pull_request, a_: release, aG: searches, a2: status, L: title, as: $author$project$Main$initialModel.as};
+			return {aR: branches, z: error, af: $author$project$Main$initialModel.af, m: false, w: pull_request, a_: release, aG: searches, a2: status, L: title, as: $author$project$Main$initialModel.as};
 		}),
 	A2($elm$json$Json$Decode$field, 'pull_request', $elm$json$Json$Decode$int),
 	A2($elm$json$Json$Decode$field, 'release', $elm$json$Json$Decode$string),
@@ -6519,15 +6519,15 @@ var $author$project$Main$resultDecoder = A8(
 		'searches',
 		$elm$json$Json$Decode$list($author$project$Main$searchDecoder)),
 	A2($elm$json$Json$Decode$field, 'error', $elm$json$Json$Decode$string));
-var $author$project$Main$getResult = function (model) {
+var $author$project$Main$getResult = function (pr) {
 	return $elm$http$Http$get(
 		{
 			aT: A2($elm$http$Http$expectJson, $author$project$Main$GotResult, $author$project$Main$resultDecoder),
-			a5: '/' + $elm$core$String$fromInt(model.B)
+			a5: '/' + $elm$core$String$fromInt(pr)
 		});
 };
 var $author$project$Main$UpdateResult = function (a) {
-	return {$: 4, a: a};
+	return {$: 5, a: a};
 };
 var $author$project$Main$getUpdate = $elm$http$Http$get(
 	{
@@ -6562,15 +6562,15 @@ var $author$project$Main$update = F2(
 			case 0:
 				return _Utils_Tuple2(
 					$author$project$Main$loadingModel,
-					$author$project$Main$getResult(model));
-			case 1:
+					$author$project$Main$getResult(model.w));
+			case 2:
 				if (msg.a.$ === 1) {
 					var err = msg.a.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								y: 'Error: ' + $author$project$Main$httpErr(err),
+								z: 'Error: ' + $author$project$Main$httpErr(err),
 								m: false
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -6578,14 +6578,14 @@ var $author$project$Main$update = F2(
 					var pr = msg.a.a;
 					return _Utils_Tuple2(pr, $elm$core$Platform$Cmd$none);
 				}
-			case 3:
+			case 4:
 				if (msg.a.$ === 1) {
 					var err = msg.a.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								y: 'Error: ' + $author$project$Main$httpErr(err),
+								z: 'Error: ' + $author$project$Main$httpErr(err),
 								m: false
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -6597,14 +6597,14 @@ var $author$project$Main$update = F2(
 							{aG: searches}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 2:
+			case 3:
 				if (msg.a.$ === 1) {
 					var err = msg.a.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								y: 'Error: ' + $author$project$Main$httpErr(err),
+								z: 'Error: ' + $author$project$Main$httpErr(err),
 								m: false
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -6616,14 +6616,14 @@ var $author$project$Main$update = F2(
 							{af: resp, m: false}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 4:
+			case 5:
 				if (msg.a.$ === 1) {
 					var err = msg.a.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								y: 'Error: ' + $author$project$Main$httpErr(err),
+								z: 'Error: ' + $author$project$Main$httpErr(err),
 								m: false
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -6635,13 +6635,13 @@ var $author$project$Main$update = F2(
 							{m: false, as: resp}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 5:
+			case 6:
 				var pr = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							B: function () {
+							w: function () {
 								var _v1 = $elm$core$String$toInt(pr);
 								if (!_v1.$) {
 									var a = _v1.a;
@@ -6652,18 +6652,23 @@ var $author$project$Main$update = F2(
 							}()
 						}),
 					$elm$core$Platform$Cmd$none);
-			case 7:
+			case 1:
+				var pr = msg.a;
+				return _Utils_Tuple2(
+					$author$project$Main$loadingModel,
+					$author$project$Main$getResult(pr));
+			case 8:
 				return _Utils_Tuple2($author$project$Main$loadingModel, $author$project$Main$getGC);
 			default:
 				return _Utils_Tuple2($author$project$Main$loadingModel, $author$project$Main$getUpdate);
 		}
 	});
-var $author$project$Main$CollectGarbage = {$: 7};
+var $author$project$Main$CollectGarbage = {$: 8};
 var $author$project$Main$RunSearch = {$: 0};
 var $author$project$Main$SetPR = function (a) {
-	return {$: 5, a: a};
+	return {$: 6, a: a};
 };
-var $author$project$Main$UpdateBackend = {$: 6};
+var $author$project$Main$UpdateBackend = {$: 7};
 var $rtfeldman$elm_css$VirtualDom$Styled$Node = F3(
 	function (a, b, c) {
 		return {$: 0, a: a, b: b, c: c};
@@ -8473,7 +8478,7 @@ var $rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
 			aj: 0,
 			Q: 0,
 			R: 0,
-			z: 0,
+			A: 0,
 			ak: 0,
 			J: numericValue,
 			ap: 0,
@@ -8502,7 +8507,7 @@ var $rtfeldman$elm_css$Css$rgb = F3(
 		return {
 			av: 1,
 			ax: b,
-			x: 0,
+			y: 0,
 			aA: g,
 			aF: r,
 			C: A2(
@@ -9339,7 +9344,7 @@ var $author$project$Main$viewResult = function (data) {
 	if (_v0 === '') {
 		return $rtfeldman$elm_css$Html$Styled$text('');
 	} else {
-		var prStr = $elm$core$String$fromInt(data.B);
+		var prStr = $elm$core$String$fromInt(data.w);
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$table,
 			_List_Nil,
@@ -9396,14 +9401,29 @@ var $author$project$Main$viewResult = function (data) {
 				]));
 	}
 };
+var $author$project$Main$SearchPR = function (a) {
+	return {$: 1, a: a};
+};
 var $rtfeldman$elm_css$Html$Styled$ol = $rtfeldman$elm_css$Html$Styled$node('ol');
 var $author$project$Main$viewSearch = function (search) {
-	var prStr = $elm$core$String$fromInt(search.B);
+	var prStr = $elm$core$String$fromInt(search.w);
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$ol,
 		_List_Nil,
 		_List_fromArray(
 			[
+				A2(
+				$rtfeldman$elm_css$Html$Styled$span,
+				_List_fromArray(
+					[
+						A2($rtfeldman$elm_css$Html$Styled$Attributes$style, 'cursor', 'pointer'),
+						$rtfeldman$elm_css$Html$Styled$Events$onClick(
+						$author$project$Main$SearchPR(search.w))
+					]),
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$text('⟳')
+					])),
 				$rtfeldman$elm_css$Html$Styled$text(prStr),
 				$rtfeldman$elm_css$Html$Styled$text(': ' + search.L),
 				A2(
@@ -9442,23 +9462,6 @@ var $author$project$Main$viewSearch = function (search) {
 									[
 										$rtfeldman$elm_css$Html$Styled$text('json')
 									]))
-							])),
-						A2(
-						$rtfeldman$elm_css$Html$Styled$li,
-						_List_Nil,
-						_List_fromArray(
-							[
-								A2(
-								$rtfeldman$elm_css$Html$Styled$a,
-								_List_fromArray(
-									[
-										$rtfeldman$elm_css$Html$Styled$Events$onClick(
-										$author$project$Main$SetPR(prStr))
-									]),
-								_List_fromArray(
-									[
-										$rtfeldman$elm_css$Html$Styled$text('Refresh')
-									]))
 							]))
 					]))
 			]));
@@ -9470,7 +9473,7 @@ var $author$project$Main$viewSearches = function (searches) {
 		A2($elm$core$List$map, $author$project$Main$viewSearch, searches));
 };
 var $author$project$Main$viewValidation = function (model) {
-	var _v0 = model.B;
+	var _v0 = model.w;
 	if (!_v0) {
 		return true;
 	} else {
@@ -9556,7 +9559,7 @@ var $author$project$Main$view = function (model) {
 										]))
 								])),
 							function () {
-							var _v0 = model.y;
+							var _v0 = model.z;
 							if (_v0 === '') {
 								return $rtfeldman$elm_css$Html$Styled$text('');
 							} else {
@@ -9568,7 +9571,7 @@ var $author$project$Main$view = function (model) {
 										]),
 									_List_fromArray(
 										[
-											$rtfeldman$elm_css$Html$Styled$text(model.y)
+											$rtfeldman$elm_css$Html$Styled$text(model.z)
 										]));
 							}
 						}(),
