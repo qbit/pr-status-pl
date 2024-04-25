@@ -7,7 +7,7 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css, href, placeholder, style)
 import Html.Styled.Events exposing (onClick, onInput)
 import Http exposing (..)
-import Json.Decode as Decode exposing (Decoder, field, list, map2, map6, string)
+import Json.Decode as Decode exposing (Decoder, field, list, map2, map7, string)
 
 
 type Status
@@ -25,6 +25,7 @@ type Msg
     = RunSearch
     | GotResult (Result Http.Error Model)
     | GCResult (Result Http.Error WorkStatus)
+    | GotSearches (Result Http.Error Searches)
     | UpdateResult (Result Http.Error WorkStatus)
     | SetPR String
     | UpdateBackend
@@ -41,11 +42,22 @@ type alias WorkStatus =
     }
 
 
+type alias Search =
+    { pull_request : Int
+    , title : String
+    }
+
+
+type alias Searches =
+    List Search
+
+
 type alias Model =
     { pull_request : Int
     , release : String
     , status : Status
     , title : String
+    , searches : Searches
     , branches : Branches
     , error : String
     , loading : Bool
@@ -100,6 +112,12 @@ update msg model =
         GotResult (Ok pr) ->
             ( pr, Cmd.none )
 
+        GotSearches (Err err) ->
+            ( { model | error = "Error: " ++ httpErr err, loading = False }, Cmd.none )
+
+        GotSearches (Ok searches) ->
+            ( { model | searches = searches }, Cmd.none )
+
         GCResult (Err err) ->
             ( { model | error = "Error: " ++ httpErr err, loading = False }, Cmd.none )
 
@@ -139,6 +157,7 @@ initialModel =
     , status = Open
     , title = ""
     , branches = []
+    , searches = []
     , error = ""
     , loading = False
     , updateStatus =
@@ -154,7 +173,7 @@ initialModel =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( initialModel, Cmd.none )
+    ( initialModel, getSearches )
 
 
 loading : Html msg
@@ -211,6 +230,10 @@ view model =
                         span [ style "color" "red" ] [ text model.error ]
                 , hr [] []
                 , div []
+                    [ viewSearches model.searches
+                    ]
+                , hr [] []
+                , div []
                     [ button
                         [ onClick UpdateBackend
                         , Html.Styled.Attributes.disabled model.loading
@@ -233,6 +256,32 @@ view model =
         ]
     , title = "pr-status"
     }
+
+
+viewSearch : Search -> Html Msg
+viewSearch search =
+    let
+        prStr =
+            String.fromInt search.pull_request
+    in
+    ol []
+        [ text prStr
+        , text (": " ++ search.title)
+        , ul []
+            [ li [] [ a [ href ("https://github.com/NixOS/nixpkgs/pull/" ++ prStr) ] [ text "nixpkgs" ] ]
+            , li [] [ a [ href ("/" ++ prStr) ] [ text "json" ] ]
+            , li [] [ a [ onClick (SetPR prStr) ] [ text "Refresh" ] ]
+            ]
+        ]
+
+
+viewSearches : Searches -> Html Msg
+viewSearches searches =
+    ul []
+        (List.map
+            viewSearch
+            searches
+        )
 
 
 viewWorkAction : WorkStatus -> Html Msg
@@ -324,6 +373,14 @@ getResult model =
         }
 
 
+getSearches : Cmd Msg
+getSearches =
+    Http.get
+        { url = "/searches"
+        , expect = Http.expectJson GotSearches searchListDecoder
+        }
+
+
 getGC : Cmd Msg
 getGC =
     Http.get
@@ -367,15 +424,28 @@ workStatusDecoder =
         (field "updateTime" Decode.float)
 
 
+searchListDecoder : Decoder Searches
+searchListDecoder =
+    list searchDecoder
+
+
+searchDecoder : Decoder Search
+searchDecoder =
+    map2 Search
+        (field "pull_request" Decode.int)
+        (field "title" string)
+
+
 resultDecoder : Decoder Model
 resultDecoder =
-    map6
-        (\pull_request release status title branches error ->
+    map7
+        (\pull_request release status title branches searches error ->
             { pull_request = pull_request
             , release = release
             , status = status
             , title = title
             , branches = branches
+            , searches = searches
             , error = error
             , loading = False
             , updateStatus = initialModel.updateStatus
@@ -387,6 +457,7 @@ resultDecoder =
         (field "status" statusDecoder)
         (field "title" string)
         (field "branches" (list string))
+        (field "searches" (list searchDecoder))
         (field "error" string)
 
 
