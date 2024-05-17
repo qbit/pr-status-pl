@@ -55,9 +55,13 @@ sub save_search {
         @$searches,
         {
             pull_request => $r->{pull_request},
-            title        => $r->{title}
+            title        => $r->{title},
+            epoch        => time
         }
     ) unless grep { $r->{pull_request} == $_->{pull_request} } @$searches;
+
+    my @sorted = reverse sort { $a->{epoch} <=> $b->{epoch} } @$searches;
+    $searches = \@sorted;
 
     open my $fh, ">", "${work_dir}/searches.json" or die $!;
     print $fh encode_json($searches);
@@ -70,6 +74,8 @@ sub load_searches {
         $searches = decode_json <$fh>;
         close $fh;
     }
+    my @sorted = reverse sort { $a->{epoch} <=> $b->{epoch} } @$searches;
+    $searches = \@sorted;
 }
 
 sub get_commit {
@@ -213,6 +219,9 @@ get '/:pr' => sub ($c) {
     my $end   = time;
 
     my ( $release, $status ) = figure_status($list);
+
+    my @sorted = reverse sort { $a->{epoch} <=> $b->{epoch} } @$searches;
+    $searches = \@sorted;
 
     my $result = {
         title        => $title,
