@@ -51,7 +51,9 @@ in {
     systemd.services.pr-status = {
       enable = true;
       description = "pr-status server";
+      after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
+      wantedBy = [ "multi-user.target" ];
 
       environment = { HOME = "/var/lib/pr-status"; };
 
