@@ -1,8 +1,5 @@
 #!/usr/bin/perl
 
-# vim: set ts=4 sw=4 tw=0:
-# vim: set expandtab:
-
 use strict;
 use warnings;
 use v5.32;
@@ -142,8 +139,7 @@ sub figure_status {
     else {
         $release = "stable";
         foreach my $s (@stable) {
-
-# handle this stuff with a regex so we don't have to specify "22.11" kinda stuff
+	    # handle this stuff with a regex so we don't have to specify "22.11" kinda stuff
             my @b  = grep /$s/, @{$list};
             my $ns = $b[0];
             if ( defined $ns ) {
