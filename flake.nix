@@ -17,16 +17,20 @@
       nixosModule = import ./module.nix;
       packages = forAllSystems (system:
         let pkgs = nixpkgsFor.${system};
+            perl' = pkgs.perl.withPackages (pp:
+              [
+                pp.Mojolicious
+                pp.JSON
+                pp.Git
+              ]);
         in {
           pr-status = pkgs.perlPackages.buildPerlPackage {
             pname = "pr-status";
             version = "v0.0.4";
             src = ./.;
             buildInputs = with pkgs; [ makeWrapper ];
-            propagatedBuildInputs = with pkgs.perlPackages; [
-              Mojolicious
-              JSON
-              Git
+            propagatedBuildInputs = [
+              perl'
             ];
 
             postInstall = ''
@@ -43,11 +47,17 @@
         forAllSystems (system: self.packages.${system}.pr-status);
       devShells = forAllSystems (system:
         let pkgs = nixpkgsFor.${system};
+            perl' = pkgs.perl.withPackages (pp: with pp; [
+              Git
+              JSON
+              Mojolicious
+            ]);
         npPackages = with pkgs; [
           elmPackages.elm
           elmPackages.elm-test
           elmPackages.elm-live
           elmPackages.elm-json
+          perl'
         ];
         in {
           default = pkgs.mkShell {
@@ -56,13 +66,7 @@
               nix run github:qbit/xin#flake-warn
               echo "Perl `${pkgs.perl}/bin/perl --version`"
             '';
-            buildInputs = with pkgs.perlPackages; [
-              Git
-              JSON
-              Mojolicious
-              perl
-              PerlCritic
-              PerlTidy
+            buildInputs = [
             ] ++ npPackages;
           };
         });
