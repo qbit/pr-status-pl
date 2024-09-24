@@ -24,6 +24,7 @@ type WorkAction
 type Msg
     = RunSearch
     | SearchPR Int
+    | DeleteSearchPR Int
     | GotResult (Result Http.Error Model)
     | GCResult (Result Http.Error WorkStatus)
     | GotSearches (Result Http.Error Searches)
@@ -146,6 +147,9 @@ update msg model =
 
         SearchPR pr ->
             ( loadingModel, getResult pr )
+
+        DeleteSearchPR pr ->
+            ( model, deleteSearchPR pr )
 
         CollectGarbage ->
             ( loadingModel, getGC )
@@ -270,6 +274,9 @@ viewSearch search =
     in
     ol []
         [ span [ style "cursor" "pointer", onClick (SearchPR search.pull_request) ] [ text "⟳" ]
+        , text " "
+        , span [ style "cursor" "pointer", onClick (DeleteSearchPR search.pull_request) ] [ text "-" ]
+        , text " "
         , text prStr
         , text (": " ++ search.title)
         , ul []
@@ -367,6 +374,19 @@ makeRow title data =
         [ td [] [ b [] [ text title ] ]
         , td [] [ text data ]
         ]
+
+
+deleteSearchPR : Int -> Cmd Msg
+deleteSearchPR pr =
+    Http.request
+        { method = "DELETE"
+        , headers = []
+        , url = "/searches/" ++ String.fromInt pr
+        , body = Http.emptyBody
+        , expect = Http.expectJson GotSearches searchListDecoder
+        , timeout = Nothing
+        , tracker = Nothing
+        }
 
 
 getResult : Int -> Cmd Msg
