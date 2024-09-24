@@ -51,6 +51,8 @@
               Git
               JSON
               Mojolicious
+              PerlTidy
+              PerlLanguageServer
             ]);
         npPackages = with pkgs; [
           elmPackages.elm
